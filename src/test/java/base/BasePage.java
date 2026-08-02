@@ -22,7 +22,7 @@ public class BasePage {
         return driver.findElement(locator).getAttribute("value");
     }
 
-    protected String getMessage(By locator) {
+    protected String getMessageFromPage(By locator) {
         return driver.findElement(locator).getText();
     }
 

@@ -9,8 +9,8 @@ public class WebFormPage extends BasePage {
     private final By passInput = By.name("my-password");
     private final By textArea = By.cssSelector("textarea");
     private final By submitBtn = By.cssSelector("button");
-    private final By disabledInput = By.xpath("/html/body/main/div/form/div/div[1]/label[4]/input");
-    private final By readOnlyInput = By.cssSelector("input");
+    private final By disabledInput = By.name("my-disabled");
+    private final By readOnlyInput = By.name("my-readonly");
     private final By message = By.id("message");
 
     public WebFormPage(WebDriver driver) {
@@ -50,7 +50,7 @@ public class WebFormPage extends BasePage {
     }
 
     public String getMessage() {
-        return getMessage(message);
+        return getMessageFromPage(message);
     }
 
     public String getTitle() {

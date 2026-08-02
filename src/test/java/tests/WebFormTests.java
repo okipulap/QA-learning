@@ -10,7 +10,7 @@ import pages.WebFormPage;
 public class WebFormTests extends BaseTest {
 
     @Test
-    void successFullSubmit() {
+    void successfulSubmit() {
         WebFormPage page = new WebFormPage(driver);
 
         String title = page.getTitle();
@@ -23,5 +23,10 @@ public class WebFormTests extends BaseTest {
         page.submit();
         assertEquals("Received!", page.getMessage());
 
+    }
+
+    @Test
+    void emptyTextInput() {
+        WebFormPage page = new WebFormPage(driver);
     }
 }

@@ -11,10 +11,10 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.bonigarcia:webdrivermanager:6.1.0")
+    testImplementation("io.github.bonigarcia:webdrivermanager:6.1.0")
 
     // Source: https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
-    implementation("org.seleniumhq.selenium:selenium-java:4.45.0")
+    testImplementation("org.seleniumhq.selenium:selenium-java:4.45.0")
 
     testImplementation(platform("org.junit:junit-bom:6.0.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
