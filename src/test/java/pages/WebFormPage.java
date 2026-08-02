@@ -3,6 +3,8 @@ package pages;
 import base.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 
 public class WebFormPage extends BasePage {
     private final By textInput = By.name("my-text");
@@ -12,6 +14,7 @@ public class WebFormPage extends BasePage {
     private final By disabledInput = By.name("my-disabled");
     private final By readOnlyInput = By.name("my-readonly");
     private final By message = By.id("message");
+    private final By select = By.name("my-select");
 
     public WebFormPage(WebDriver driver) {
         super(driver);
@@ -27,6 +30,17 @@ public class WebFormPage extends BasePage {
 
     public void enterPass(String pass) {
         type(passInput, pass);
+    }
+    public void getTextFromSelect(String text) {
+        selectByText(select, text);
+    }
+
+    public void getValueFromSelect(String value) {
+        selectByValue(select, value);
+    }
+
+    public String getSelectedOptionText() {
+        return selectedOptionText(select);
     }
 
     public void enterTextArea(String text) {
@@ -65,7 +79,6 @@ public class WebFormPage extends BasePage {
         return getMessageFromPage(message);
     }
 
-
     public String getTitle() {
         return getTitleBase();
     }
@@ -73,9 +86,4 @@ public class WebFormPage extends BasePage {
     public String getTextFromTextBox() {
        return getText(textInput);
     }
-
-    public String getTextFromReadonly() {
-        return getText(readOnlyInput);
-    }
-
 }

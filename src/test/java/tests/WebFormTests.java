@@ -43,7 +43,7 @@ public class WebFormTests extends BaseTest {
     }
 
     @Test
-    void disabledInputShouldBeDisabled() {
+    void disabledInputShouldBeDisabledTest() {
         WebFormPage page = new WebFormPage(driver);
 
         String title = page.getTitle();
@@ -54,7 +54,7 @@ public class WebFormTests extends BaseTest {
     }
 
     @Test
-    void readonlyInputShouldBeReadonly() {
+    void readonlyInputShouldBeReadonlyTest() {
         WebFormPage page = new WebFormPage(driver);
 
         String title = page.getTitle();
@@ -65,12 +65,16 @@ public class WebFormTests extends BaseTest {
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "One, 1",
-            "Two, 2",
-            "Three, 3"
+    @CsvSource ({
+        "1, One",
+        "2, Two",
+        "3, Three"
     })
-    void shouldAcceptSuggestedValue(String ) {
+    void selectOptionByValueTest(String value, String text) {
+        WebFormPage page = new WebFormPage(driver);
 
+        page.getValueFromSelect(value);
+
+        assertThat(page.getSelectedOptionText()).isEqualTo(text);
     }
 }
