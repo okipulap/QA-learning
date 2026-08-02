@@ -5,12 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import base.BaseTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import pages.WebFormPage;
 
 public class WebFormTests extends BaseTest {
 
     @Test
-    void successfulSubmit() {
+    void successfulSubmitTest() {
         WebFormPage page = new WebFormPage(driver);
 
         String title = page.getTitle();
@@ -26,7 +28,49 @@ public class WebFormTests extends BaseTest {
     }
 
     @Test
-    void emptyTextInput() {
+    void emptyTextInputTest() {
         WebFormPage page = new WebFormPage(driver);
+
+        String title = page.getTitle();
+        assertThat(title).isEqualTo("Web form");
+
+        String empty = "";
+        page.enterTextInput(empty);
+        assertThat(page.getTextFromTextBox()).isEmpty();
+
+        page.submit();
+        assertThat("Received!").isEqualTo(page.getMessage());
+    }
+
+    @Test
+    void disabledInputShouldBeDisabled() {
+        WebFormPage page = new WebFormPage(driver);
+
+        String title = page.getTitle();
+
+        assertThat(title).isEqualTo("Web form");
+        assertThat(page.disabledInputIsEnabled()).isFalse();
+        assertThat(page.disabledInputIsDisplayed()).isTrue();
+    }
+
+    @Test
+    void readonlyInputShouldBeReadonly() {
+        WebFormPage page = new WebFormPage(driver);
+
+        String title = page.getTitle();
+
+        assertThat(title).isEqualTo("Web form");
+        assertThat(page.readOnlyInputIsDisplayed()).isTrue();
+        assertThat(page.readOnlyInputIsEnabled()).isTrue();
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "One, 1",
+            "Two, 2",
+            "Three, 3"
+    })
+    void shouldAcceptSuggestedValue(String ) {
+
     }
 }

@@ -21,6 +21,10 @@ public class WebFormPage extends BasePage {
         type(textInput, text);
     }
 
+    public void enterTextInReadonly(String text) {
+        type(readOnlyInput, text);
+    }
+
     public void enterPass(String pass) {
         type(passInput, pass);
     }
@@ -41,6 +45,14 @@ public class WebFormPage extends BasePage {
         return isEnabled(disabledInput);
     }
 
+    public String getAttributeDisabled() {
+        return isHaveDomAttributeDisabled(disabledInput);
+    }
+
+    public String getAttributeReadonly() {
+        return  isHaveDomAttributeReadonly(readOnlyInput);
+    }
+
     public boolean readOnlyInputIsDisplayed() {
         return isDisplayed(readOnlyInput);
     }
@@ -53,6 +65,7 @@ public class WebFormPage extends BasePage {
         return getMessageFromPage(message);
     }
 
+
     public String getTitle() {
         return getTitleBase();
     }
@@ -60,4 +73,9 @@ public class WebFormPage extends BasePage {
     public String getTextFromTextBox() {
        return getText(textInput);
     }
+
+    public String getTextFromReadonly() {
+        return getText(readOnlyInput);
+    }
+
 }

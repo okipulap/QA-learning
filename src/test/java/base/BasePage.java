@@ -26,6 +26,14 @@ public class BasePage {
         return driver.findElement(locator).getText();
     }
 
+    protected String isHaveDomAttributeDisabled(By locator) {
+        return driver.findElement(locator).getDomAttribute("disabled");
+    }
+
+    protected String isHaveDomAttributeReadonly(By locator) {
+        return driver.findElement(locator).getDomAttribute("readonly");
+    }
+
     protected boolean isEnabled(By locator) {
         return driver.findElement(locator).isEnabled();
     }
