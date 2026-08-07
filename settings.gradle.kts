@@ -1,1 +1,1 @@
-rootProject.name = "UI-tests"
+rootProject.name = "UI-uiTests.seleniumWebForm.tests.pages.tests"

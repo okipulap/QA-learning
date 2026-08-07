@@ -1,10 +1,8 @@
-package pages;
+package uiTests.seleniumWebForm.pages;
 
-import base.BasePage;
+import uiTests.seleniumWebForm.base.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.Select;
 
 public class WebFormPage extends BasePage {
     private final By textInput = By.name("my-text");

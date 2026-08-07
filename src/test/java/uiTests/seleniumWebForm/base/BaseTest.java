@@ -1,4 +1,4 @@
-package base;
+package uiTests.seleniumWebForm.base;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
