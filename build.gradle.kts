@@ -12,9 +12,11 @@ repositories {
 
 dependencies {
     testImplementation("io.github.bonigarcia:webdrivermanager:6.1.0")
-
-    // Source: https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
     testImplementation("org.seleniumhq.selenium:selenium-java:4.45.0")
+
+    // Source: https://mvnrepository.com/artifact/io.rest-assured/rest-assured
+    testImplementation("io.rest-assured:rest-assured:6.0.0")
+    implementation("tools.jackson.core:jackson-databind:3.2.1")
 
     testImplementation(platform("org.junit:junit-bom:6.0.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
