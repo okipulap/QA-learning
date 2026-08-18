@@ -18,7 +18,9 @@ public abstract class ApiBaseClient {
         return RestAssured.given()
                 .spec(spec)
                 .body(body)
-                .post(endpoint);
+                .post("pet")
+                .then()
+                .extract()
+                .response();
     }
-}
 }
