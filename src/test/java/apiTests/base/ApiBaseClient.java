@@ -7,7 +7,6 @@ import io.restassured.specification.RequestSpecification;
 public abstract class ApiBaseClient {
 
     protected final RequestSpecification spec;
-    protected final String endpoint = "/pet";
 
     public ApiBaseClient(RequestSpecification spec) {
         this.spec = spec;
@@ -24,29 +23,30 @@ public abstract class ApiBaseClient {
                 .response();
     }
 
-    protected Response put(String endpoint, Object body) {
+    protected Response put(String endpoint, Object body, Long id) {
         return RestAssured.given()
                 .spec(spec)
+                .pathParam("id", id)
                 .body(body)
                 .when()
-                .put(endpoint)
+                .put(endpoint + "/{id}")
                 .then()
                 .extract()
                 .response();
     }
 
-    protected Response getById(String endpoint, int id) {
+    protected Response getById(String endpoint, Long id) {
         return RestAssured.given()
                 .spec(spec)
                 .pathParam("id", id)
                 .when()
-                .get(endpoint + "{id}")
+                .get(endpoint + "/{id}")
                 .then()
                 .extract()
                 .response();
     }
 
-    protected Response delete(String endpoint, int id) {
+    protected Response delete(String endpoint, Long id) {
         return RestAssured.given()
                 .spec(spec)
                 .pathParam("id", id)

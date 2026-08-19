@@ -5,7 +5,7 @@ build/
 !**/src/test/**/build/
 .kotlin
 Dockerfile
-
+.env
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
