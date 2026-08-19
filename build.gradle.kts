@@ -29,10 +29,12 @@ dependencies {
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
     implementation("io.github.cdimascio:dotenv-java:3.2.0")
 
+    //JUnit5
     testImplementation(platform("org.junit:junit-bom:5.10.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
+    //AssertJ
     testImplementation("org.assertj:assertj-core:3.27.7")
 }
 

@@ -11,6 +11,7 @@ import io.restassured.specification.RequestSpecification;
 public class RequestSpec {
 
     private static final String API_KEY = Dotenv.load().get("PETSTORE_API_KEY");
+
     public static RequestSpecification defaultSpec() {
         return new RequestSpecBuilder()
                 .setBaseUri("http://localhost:8080/api/")
