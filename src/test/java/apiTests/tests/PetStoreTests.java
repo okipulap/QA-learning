@@ -6,6 +6,7 @@ import apiTests.models.PetRequest;
 import apiTests.models.PetResponse;
 import apiTests.models.TagsItem;
 import io.qameta.allure.*;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
@@ -29,7 +30,8 @@ public class PetStoreTests {
     @Owner("Nikita Tkachenko")
     @Severity(SeverityLevel.BLOCKER)
     @Feature("Ручка API добавления питомца")
-    @Story("Создание питомца")
+    @Story("Юзер создает питомца")
+    @Step("Создание питомца")
     void createPetTest() {
         PetRequest request = new PetRequest();
         request.setId(ThreadLocalRandom.current().nextLong(1, 1_000_000));
@@ -46,11 +48,20 @@ public class PetStoreTests {
 
 
         PetResponse response = client.createPet(request);
-        petId = response.getId();
+        petId = request.getId();
 
-        assertEquals(request.getId(), response.getId());
-        assertEquals(request.getName(), response.getName());
-        assertEquals(request.getStatus(), response.getStatus());
+        SoftAssertions soft = new SoftAssertions();
+        soft.assertThat(request.getId())
+                .isEqualTo(response.getId());
+        soft.assertThat(request.getName())
+                .isEqualTo(response.getName());
+        soft.assertThat(request.getCategory())
+                .usingRecursiveComparison()
+                .isEqualTo(response.getCategory());
+        soft.assertThat(request.getTags())
+                .usingRecursiveComparison()
+                .isEqualTo(response.getTags());
+        soft.assertAll();
     }
 
     @Test
@@ -59,9 +70,38 @@ public class PetStoreTests {
     @Owner("Nikita Tkachenko")
     @Severity(SeverityLevel.BLOCKER)
     @Feature("Ручка API выборки питомца")
-    @Story("Выборка питомца")
-    void getPetTest() {
+    @Story("Юзер получает питомца")
+    @Step("Получение питомца")
+    void getPetTestWithStatusCode200() {
+        PetRequest request = new PetRequest();
+        request.setId(ThreadLocalRandom.current().nextLong(1, 1_000_000));
+        request.setName("autoPet");
+        Category category = new Category();
+        category.setId(1);
+        category.setName("Dogs");
+        request.setCategory(category);
+        TagsItem item = new TagsItem();
+        item.setId(1);
+        item.setName("тестик");
+        request.setTags(List.of(item));
+        request.setStatus("available");
 
+        client.createPet(request);
+        PetResponse getResponse = client.getByPetId(request.getId());
+        petId = request.getId();
+
+        SoftAssertions soft = new SoftAssertions();
+        soft.assertThat(request.getId())
+                .isEqualTo(getResponse.getId());
+        soft.assertThat(request.getName())
+                .isEqualTo(getResponse.getName());
+        soft.assertThat(request.getCategory())
+                .usingRecursiveComparison()
+                .isEqualTo(getResponse.getCategory());
+        soft.assertThat(request.getTags())
+                .usingRecursiveComparison()
+                .isEqualTo(getResponse.getTags());
+        soft.assertAll();
     }
 
     @AfterEach
