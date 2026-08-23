@@ -3,6 +3,7 @@ package apiTests.base;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import io.qameta.allure.*;
 
 public abstract class ApiBaseClient {
 
@@ -12,6 +13,7 @@ public abstract class ApiBaseClient {
         this.spec = spec;
     }
 
+    @Step("Создание объекта")
     protected Response create(String endpoint, Object body) {
         return RestAssured.given()
                 .spec(spec)
@@ -23,18 +25,19 @@ public abstract class ApiBaseClient {
                 .response();
     }
 
-    protected Response put(String endpoint, Object body, Long id) {
+    @Step("Изменение объекта")
+    protected Response put(String endpoint, Object body) {
         return RestAssured.given()
                 .spec(spec)
-                .pathParam("id", id)
                 .body(body)
                 .when()
-                .put(endpoint + "/{id}")
+                .put(endpoint)
                 .then()
                 .extract()
                 .response();
     }
 
+    @Step("Получение объекта по id")
     protected Response getById(String endpoint, Long id) {
         return RestAssured.given()
                 .spec(spec)
@@ -46,6 +49,7 @@ public abstract class ApiBaseClient {
                 .response();
     }
 
+    @Step("Удаление объекта")
     protected Response delete(String endpoint, Long id) {
         return RestAssured.given()
                 .spec(spec)

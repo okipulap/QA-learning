@@ -7,11 +7,13 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
+import io.qameta.allure.*;
 
 public class RequestSpec {
 
     private static final String API_KEY = Dotenv.load().get("PETSTORE_API_KEY");
 
+    @Step("Создание спецификации запроса")
     public static RequestSpecification defaultSpec() {
         return new RequestSpecBuilder()
                 .setBaseUri("http://localhost:8080/api/")

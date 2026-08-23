@@ -25,17 +25,17 @@ public class PetClient extends ApiBaseClient {
                 .as(PetResponse.class);
     }
 
-    @Step("Изменение питомца")
-    public PetResponse putPet(PetRequest request, Long id) {
-        return put(PET_ENDPOINT, request, id)
+    @Step("Изменение питомца по его id: {id}")
+    public PetResponse putPet(PetRequest request) {
+        return put(PET_ENDPOINT, request)
                 .then()
-                .log().ifError()
+                .log().all()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .as(PetResponse.class);
     }
 
-    @Step("Получение питомца")
+    @Step("Получение питомца по его id: {id}")
     public PetResponse getByPetId(Long id) {
         return getById(PET_ENDPOINT, id)
                 .then()
@@ -45,7 +45,7 @@ public class PetClient extends ApiBaseClient {
                 .as(PetResponse.class);
     }
 
-    @Step("Удаление питомца")
+    @Step("Удаление питомца по его id: {id}")
     public void deletePet(Long id) {
         delete(PET_ENDPOINT, id)
                 .then()

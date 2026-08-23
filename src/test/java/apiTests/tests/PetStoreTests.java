@@ -8,6 +8,10 @@ import apiTests.models.TagsItem;
 import io.qameta.allure.*;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.SoftAssertions.*;
@@ -31,7 +35,6 @@ public class PetStoreTests {
     @Severity(SeverityLevel.BLOCKER)
     @Feature("Ручка API добавления питомца")
     @Story("Юзер создает питомца")
-    @Step("Создание питомца")
     void createPetTest() {
         PetRequest request = new PetRequest();
         request.setId(ThreadLocalRandom.current().nextLong(1, 1_000_000));
@@ -71,7 +74,6 @@ public class PetStoreTests {
     @Severity(SeverityLevel.BLOCKER)
     @Feature("Ручка API выборки питомца")
     @Story("Юзер получает питомца")
-    @Step("Получение питомца")
     void getPetTestWithStatusCode200() {
         PetRequest request = new PetRequest();
         request.setId(ThreadLocalRandom.current().nextLong(1, 1_000_000));
@@ -102,6 +104,59 @@ public class PetStoreTests {
                 .usingRecursiveComparison()
                 .isEqualTo(getResponse.getTags());
         soft.assertAll();
+    }
+
+    @ParameterizedTest
+    @CsvSource( {"pending",
+            "sold"}
+    )
+    @Tag("Positive")
+    @DisplayName("Проверка изменения статуса питомца")
+    @Owner("Nikita Tkachenko")
+    @Severity(SeverityLevel.BLOCKER)
+    @Feature("Ручка API изменения статуса питомца")
+    @Story("Юзер изменяет статус питомца")
+    void putStatusPetWithStatus200(String status) {
+        PetRequest postRequest = new PetRequest();
+        postRequest.setId(ThreadLocalRandom.current().nextLong(1, 1_000_000));
+        postRequest.setName("autoPet");
+        Category category = new Category();
+        category.setId(1);
+        category.setName("Dogs");
+        postRequest.setCategory(category);
+        TagsItem item = new TagsItem();
+        item.setId(1);
+        item.setName("тестик");
+        postRequest.setTags(List.of(item));
+        postRequest.setStatus("available");
+
+        PetResponse createResponse = client.createPet(postRequest);
+        petId = createResponse.getId();
+
+        PetRequest putRequest = new PetRequest();
+        putRequest.setId(postRequest.getId());
+        putRequest.setName("putPet");
+        Category putCategory = new Category();
+        putCategory.setId(1);
+        putCategory.setName("Dogs");
+        putRequest.setCategory(putCategory);
+        TagsItem putItem = new TagsItem();
+        putItem.setId(1);
+        putItem.setName("путовый");
+        putRequest.setTags(List.of(putItem));
+        putRequest.setStatus(status);
+
+        PetResponse putResponse = client.putPet(putRequest);
+        PetResponse getResponse = client.getByPetId(putRequest.getId());
+
+        assertThat(putRequest.getId())
+                .isEqualTo(getResponse.getId());
+        assertThat(putRequest.getStatus())
+                .isEqualTo(getResponse.getStatus());
+        assertThat(putRequest.getId())
+                .isEqualTo(putResponse.getId());
+        assertThat(putRequest.getStatus())
+                .isEqualTo(putResponse.getStatus());
     }
 
     @AfterEach
