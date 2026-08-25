@@ -25,6 +25,8 @@ public class PetClient extends ApiBaseClient {
                 .as(PetResponse.class);
     }
 
+
+
     @Step("Изменение питомца по его id: {id}")
     public PetResponse putPet(PetRequest request) {
         return put(PET_ENDPOINT, request)

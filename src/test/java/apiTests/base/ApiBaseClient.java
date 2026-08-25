@@ -25,6 +25,20 @@ public abstract class ApiBaseClient {
                 .response();
     }
 
+    //создать новую спеку, вместо content-type сделать x-www-form-urlencoded и сделать отправление url-encoded параметров
+//    @Step("Изменение объекта с помощью формы")
+//    protected Response updateWithFormData(String endpoint, Object body, int id) {
+//        return RestAssured.given()
+//                .spec(spec)
+//                .pathParam("id", id)
+//                .body(body)
+//                .when()
+//                .post(endpoint + "/{id}")
+//                .then()
+//                .extract()
+//                .response();
+//    }
+
     @Step("Изменение объекта")
     protected Response put(String endpoint, Object body) {
         return RestAssured.given()
@@ -44,6 +58,30 @@ public abstract class ApiBaseClient {
                 .pathParam("id", id)
                 .when()
                 .get(endpoint + "/{id}")
+                .then()
+                .extract()
+                .response();
+    }
+
+    @Step("Получение объекта по статусу")
+    protected Response getByStatus(String endpoint, String status) {
+        return RestAssured.given()
+                .spec(spec)
+                .queryParam("status", status)
+                .when()
+                .get(endpoint + "/findByStatus")
+                .then()
+                .extract()
+                .response();
+    }
+
+    @Step("Получение объекта по тегу")
+    protected Response getByTag(String endpoint, String tag) {
+        return RestAssured.given()
+                .spec(spec)
+                .queryParam("status", tag)
+                .when()
+                .get(endpoint + "/findByTags")
                 .then()
                 .extract()
                 .response();
