@@ -70,4 +70,46 @@ public class PetRequest{
 	public String getStatus(){
 		return status;
 	}
+
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	public static class Builder {
+		private final PetRequest request = new PetRequest();
+
+		public Builder id(Long id) {
+			request.id = id;
+			return this;
+		}
+
+		public Builder name(String name) {
+			request.name = name;
+			return this;
+		}
+
+		public Builder category(Category category) {
+			request.category = category;
+			return this;
+		}
+
+		public Builder tags(List<TagsItem> tags) {
+			request.tags = tags;
+			return this;
+		}
+
+		public Builder status(String status) {
+			request.status = status;
+			return this;
+		}
+
+		public Builder photoUrls(List<String> photoUrls) {
+			request.photoUrls = photoUrls;
+			return this;
+		}
+
+		public PetRequest build() {
+			return request;
+		}
+	}
 }

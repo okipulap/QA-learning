@@ -25,4 +25,26 @@ public class Category{
 	public Integer getId(){
 		return id;
 	}
+
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	public static class Builder {
+		private final Category category = new Category();
+
+		public Builder id(Integer id) {
+			category.id = id;
+			return this;
+		}
+
+		public Builder name(String name) {
+			category.name = name;
+			return this;
+		}
+
+		public Category build() {
+			return category;
+		}
+	}
 }

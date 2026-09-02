@@ -25,4 +25,26 @@ public class TagsItem{
 	public Integer getId(){
 		return id;
 	}
+
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	public static class Builder {
+		private final TagsItem item = new TagsItem();
+
+		public Builder id(Integer id) {
+			item.id = id;
+			return this;
+		}
+
+		public Builder name(String name) {
+			item.name = name;
+			return this;
+		}
+
+		public TagsItem build() {
+			return item;
+		}
+	}
 }
