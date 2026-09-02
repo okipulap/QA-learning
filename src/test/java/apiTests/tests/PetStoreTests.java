@@ -6,13 +6,19 @@ import apiTests.models.PetRequest;
 import apiTests.models.PetResponse;
 import apiTests.models.TagsItem;
 import io.qameta.allure.*;
+import io.restassured.response.Response;
+import org.apache.http.HttpStatus;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
 
 public class PetStoreTests {
     private static PetClient client;
@@ -54,6 +60,27 @@ public class PetStoreTests {
         soft.assertAll();
     }
 
+    private static Stream<Arguments> invalidPetRequests() {
+        return Stream.of(
+                Arguments.of("Без status", PetRequest.builder()
+                        .id(null)
+                        .name(null)
+                        .category(null)
+                        .tags(null)
+                        .status(null)
+                        .build()
+                ),
+                Arguments.of("Без id", PetRequest.builder()
+                        .id(3L)
+                        .name("autoPet")
+                        .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
+                        .tags(List.of(TagsItem.builder().id(TAG_ID).name(TAG_NAME).build()))
+                        .status("available")
+                        .build()
+                )
+        );
+    }
+
     @Test
     @Tag("Positive")
     @DisplayName("Проверка создания питомца")
@@ -68,6 +95,22 @@ public class PetStoreTests {
         petId = request.getId();
 
         assertPetFieldsMatch(request, response);
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidPetRequests")
+    @Tag("Negative")
+    @DisplayName("Проверка создания питомца с невалидными id, name")
+    @Owner("Nikita Tkachenko")
+    @Severity(SeverityLevel.NORMAL)
+    @Feature("Ручка API добавления питомца")
+    @Story("Юзер создает питомца")
+    void createPetWithStatus400(String description, PetRequest request) {
+        Response response = client.createPetExpected400(request);
+        petId = request.getId();
+
+        assertEquals("Input error: unable to convert input to io.swagger.petstore.model.Pet",
+                response.jsonPath().getString("message"));
     }
 
     @Test

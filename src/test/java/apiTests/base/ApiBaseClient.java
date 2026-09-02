@@ -1,6 +1,7 @@
 package apiTests.base;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.qameta.allure.*;
@@ -25,19 +26,21 @@ public abstract class ApiBaseClient {
                 .response();
     }
 
-    //создать новую спеку, вместо content-type сделать x-www-form-urlencoded и сделать отправление url-encoded параметров
-//    @Step("Изменение объекта с помощью формы")
-//    protected Response updateWithFormData(String endpoint, Object body, int id) {
-//        return RestAssured.given()
-//                .spec(spec)
-//                .pathParam("id", id)
-//                .body(body)
-//                .when()
-//                .post(endpoint + "/{id}")
-//                .then()
-//                .extract()
-//                .response();
-//    }
+    @Step("Изменение объекта с помощью формы")
+    protected Response updateWithFormData(String endpoint, Object body, int id, String name, String status) {
+        return RestAssured.given()
+                .spec(spec)
+                .contentType(ContentType.URLENC)
+                .pathParam("id", id)
+                .formParam("name", name)
+                .formParam("status", status)
+                .body(body)
+                .when()
+                .post(endpoint + "/{id}")
+                .then()
+                .extract()
+                .response();
+    }
 
     @Step("Изменение объекта")
     protected Response put(String endpoint, Object body) {
