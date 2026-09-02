@@ -4,6 +4,7 @@ import apiTests.models.PetRequest;
 import apiTests.models.PetResponse;
 import apiTests.specs.RequestSpec;
 import io.qameta.allure.Step;
+import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
@@ -26,11 +27,15 @@ public class PetClient extends ApiBaseClient {
                 .as(PetResponse.class);
     }
 
-    @Step("Создание питомца с ошибкой 400")
-    public Response createPetExpected400(PetRequest request) {
-        return create(PET_ENDPOINT, request)
+    @Step("Создание питомца с некорректным JSON (400)")
+    public Response createPetWithBrokenJson(String rawJson) {
+        return RestAssured.given()
+                .spec(spec)
+                .body(rawJson)
+                .when()
+                .post(PET_ENDPOINT)
                 .then()
-                .log().all()
+                .log().ifError()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .extract()
                 .response();

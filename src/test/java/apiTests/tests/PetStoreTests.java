@@ -62,22 +62,30 @@ public class PetStoreTests {
 
     private static Stream<Arguments> invalidPetRequests() {
         return Stream.of(
-                Arguments.of("Без status", PetRequest.builder()
-                        .id(null)
-                        .name(null)
-                        .category(null)
-                        .tags(null)
-                        .status(null)
-                        .build()
-                ),
-                Arguments.of("Без id", PetRequest.builder()
-                        .id(3L)
-                        .name("autoPet")
-                        .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
-                        .tags(List.of(TagsItem.builder().id(TAG_ID).name(TAG_NAME).build()))
-                        .status("available")
-                        .build()
-                )
+                Arguments.of("Битый JSON (id без значения)",
+                        """
+                        {
+                          "id": ,
+                          "name": "doggie",
+                          "category": {
+                            "id": 1,
+                            "name": "Dogs"
+                          },
+                          "tags": [
+                            {
+                              "id": 0,
+                              "name": "string"
+                            }
+                          ],
+                          "status": "available"
+                        }
+                        """),
+                Arguments.of("Битый JSON (нет закрывающей скобки)",
+                        """
+                        {
+                          "id": 123,
+                          "name": "doggie"
+                        """)
         );
     }
 
@@ -102,12 +110,11 @@ public class PetStoreTests {
     @Tag("Negative")
     @DisplayName("Проверка создания питомца с невалидными id, name")
     @Owner("Nikita Tkachenko")
-    @Severity(SeverityLevel.NORMAL)
+    @Severity(SeverityLevel.CRITICAL)
     @Feature("Ручка API добавления питомца")
     @Story("Юзер создает питомца")
-    void createPetWithStatus400(String description, PetRequest request) {
-        Response response = client.createPetExpected400(request);
-        petId = request.getId();
+    void createPetWithStatus400(String description, String brokenJson) {
+        Response response = client.createPetWithBrokenJson(brokenJson);
 
         assertEquals("Input error: unable to convert input to io.swagger.petstore.model.Pet",
                 response.jsonPath().getString("message"));
@@ -128,6 +135,22 @@ public class PetStoreTests {
         petId = request.getId();
 
         assertPetFieldsMatch(request, getResponse);
+    }
+
+    @Test
+    @Tag("Negative")
+    @DisplayName("Проверка")
+    @Owner("Nikita Tkachenko")
+    @Severity(SeverityLevel.CRITICAL)
+    @Feature("Ручка API выборки питомца")
+    @Story("Юзер получает питомца")
+    void getPetWithStatus404() {
+
+        Response response = client.getPetExpected404(ThreadLocalRandom.current()
+                .nextLong(1_000_000_000L, Long.MAX_VALUE));
+
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());
+        assertEquals("Pet not found", response.asString());
     }
 
     @ParameterizedTest
