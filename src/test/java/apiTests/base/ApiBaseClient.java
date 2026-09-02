@@ -75,17 +75,6 @@ public abstract class ApiBaseClient {
                 .response();
     }
 
-    @Step("Получение объекта по тегу")
-    protected Response getByTag(String endpoint, String tag) {
-        return RestAssured.given()
-                .spec(spec)
-                .queryParam("status", tag)
-                .when()
-                .get(endpoint + "/findByTags")
-                .then()
-                .extract()
-                .response();
-    }
 
     @Step("Удаление объекта")
     protected Response delete(String endpoint, Long id) {

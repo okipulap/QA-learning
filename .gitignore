@@ -6,6 +6,7 @@ build/
 .kotlin
 Dockerfile
 .env
+.idea
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml

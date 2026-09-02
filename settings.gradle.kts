@@ -5,4 +5,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "UI-uiTests.seleniumWebForm.tests.pages.tests"
+rootProject.name = "qa-api-petstore-tests"

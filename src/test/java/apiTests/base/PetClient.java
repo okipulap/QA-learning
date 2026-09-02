@@ -4,6 +4,7 @@ import apiTests.models.PetRequest;
 import apiTests.models.PetResponse;
 import apiTests.specs.RequestSpec;
 import io.qameta.allure.Step;
+import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
 
@@ -25,6 +26,14 @@ public class PetClient extends ApiBaseClient {
                 .as(PetResponse.class);
     }
 
+    @Step("Создание питомца с ошибкой 405")
+    public Response createPetExpected405(PetRequest request) {
+        return create(PET_ENDPOINT, request)
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.SC_METHOD_NOT_ALLOWED)
+                .extract().response();
+    }
 
 
     @Step("Изменение питомца по его id: {id}")

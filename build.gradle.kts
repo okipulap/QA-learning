@@ -20,10 +20,6 @@ dependencies {
     testImplementation("io.qameta.allure:allure-rest-assured")
     testImplementation("io.qameta.allure:allure-junit5")
 
-    //UI-test
-    testImplementation("io.github.bonigarcia:webdrivermanager:6.1.0")
-    testImplementation("org.seleniumhq.selenium:selenium-java:4.45.0")
-
     //API-test
     testImplementation("io.rest-assured:rest-assured:6.0.0")
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
