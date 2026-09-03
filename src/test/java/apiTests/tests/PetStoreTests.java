@@ -31,7 +31,7 @@ public class PetStoreTests {
     private static final Integer TAG_ID = 1;
     private static final String TAG_NAME = "тестик";
 
-    @Epic("PetStore API")
+    @Epic("PetStore API: питомцы")
     @BeforeAll
     public static void setUp() {
         client = new PetClient();
@@ -139,7 +139,7 @@ public class PetStoreTests {
 
     @Test
     @Tag("Negative")
-    @DisplayName("Проверка")
+    @DisplayName("Проверка статуса 404 при ненахождении питомца")
     @Owner("Nikita Tkachenko")
     @Severity(SeverityLevel.CRITICAL)
     @Feature("Ручка API выборки питомца")
@@ -161,7 +161,7 @@ public class PetStoreTests {
     @Severity(SeverityLevel.BLOCKER)
     @Feature("Ручка API изменения статуса питомца")
     @Story("Юзер изменяет статус питомца")
-    void putStatusPetWithStatus200(String status) {
+    void putPetWithStatus200(String status) {
         PetRequest postRequest = createDefaultPetRequest();
 
         PetResponse createResponse = client.createPet(postRequest);
@@ -181,6 +181,46 @@ public class PetStoreTests {
         assertPetFieldsMatch(putRequest, putResponse);
         assertPetFieldsMatch(putRequest, getResponse);
     }
+
+    @Test
+    @Tag("Negative")
+    @DisplayName("Проверка статуса 404 при попытке изменения питомца")
+    @Owner("Nikita Tkachenko")
+    @Severity(SeverityLevel.CRITICAL)
+    @Feature("Ручка API изменения питомца")
+    @Story("Юзер изменяет статус питомца")
+    void putPetWithStatus404() {
+        Long fakeId = 9999L;
+
+        PetRequest request = PetRequest.builder()
+                .id(fakeId)
+                .name("Error 404")
+                .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
+                .tags(List.of((TagsItem.builder().id(TAG_ID).name("пут метод").build())))
+                .status("available")
+                .build();
+
+        Response response = client.putPetExpected404(request);
+
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());
+        assertEquals("Pet not found", response.asString());
+    }
+
+//    @Test
+//    @Tag("Positive")
+//    @DisplayName("Проверка удаления питомца")
+//    @Owner("Nikita Tkachenko")
+//    @Severity(SeverityLevel.BLOCKER)
+//    @Feature("Ручка API удаления питомца")
+//    @Story("Юзер удаляет питомца")
+//    void deletePetWithStatus200() {
+//        PetRequest postRequest = createDefaultPetRequest();
+//
+//        client.createPet(postRequest);
+//
+//        PetResponse response = client.deletePet(postRequest.getId());
+//
+//    }
 
     @AfterEach
     void cleanUp() {

@@ -62,6 +62,16 @@ public class PetClient extends ApiBaseClient {
                 .response();
     }
 
+    @Step("Изменение питомца с ошибкой 404")
+    public Response putPetExpected404(PetRequest request) {
+        return put(PET_ENDPOINT, request)
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .extract()
+                .response();
+    }
+
     @Step("Изменение питомца с ошибкой 405")
     public Response putPetExpected405(PetRequest request) {
         return put(PET_ENDPOINT, request)
@@ -82,15 +92,15 @@ public class PetClient extends ApiBaseClient {
                 .as(PetResponse.class);
     }
 
-    @Step("Получение питомца с ошибкой 400")
-    public Response getPetExpected400(Long id) {
-        return getById(PET_ENDPOINT, id)
-                .then()
-                .log().ifError()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .extract()
-                .response();
-    }
+//    @Step("Получение питомца с ошибкой 400")
+//    public Response getPetExpected400(Long id) {
+//        return getById(PET_ENDPOINT, id)
+//                .then()
+//                .log().all()
+//                .statusCode(HttpStatus.SC_BAD_REQUEST)
+//                .extract()
+//                .response();
+//    }
 
     @Step("Получение питомца с ошибкой 404")
     public Response getPetExpected404(Long id) {
