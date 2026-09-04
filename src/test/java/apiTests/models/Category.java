@@ -8,7 +8,7 @@ public class Category{
 	private String name;
 
 	@JsonProperty("id")
-	private Integer id;
+	private Long id;
 
 	public void setName(String name){
 		this.name = name;
@@ -18,11 +18,11 @@ public class Category{
 		return name;
 	}
 
-	public void setId(Integer id){
+	public void setId(Long id){
 		this.id = id;
 	}
 
-	public Integer getId(){
+	public Long getId(){
 		return id;
 	}
 
@@ -33,7 +33,7 @@ public class Category{
 	public static class Builder {
 		private final Category category = new Category();
 
-		public Builder id(Integer id) {
+		public Builder id(Long id) {
 			category.id = id;
 			return this;
 		}

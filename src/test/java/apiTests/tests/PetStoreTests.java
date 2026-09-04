@@ -26,9 +26,9 @@ public class PetStoreTests {
 
     private static final String PET_NAME = "autoPet";
     private static final String STATUS_AVAILABLE = "available";
-    private static final Integer CATEGORY_ID = 1;
+    private static final Long CATEGORY_ID = 1L;
     private static final String CATEGORY_NAME = "Dogs";
-    private static final Integer TAG_ID = 1;
+    private static final Long TAG_ID = 1L;
     private static final String TAG_NAME = "тестик";
 
     @Epic("PetStore API: питомцы")
@@ -127,8 +127,7 @@ public class PetStoreTests {
                 formDataRequest, formDataRequest.getId(),
                 formDataRequest.getName(), formDataRequest.getStatus());
 
-        assertThat(HttpStatus.SC_OK)
-                .isEqualTo(formDataResponse.statusCode());
+        assertEquals(HttpStatus.SC_OK, formDataResponse.getStatusCode());
     }
 
     @ParameterizedTest
@@ -157,10 +156,29 @@ public class PetStoreTests {
         PetRequest request = createDefaultPetRequest();
 
         client.createPet(request);
-        PetResponse getResponse = client.getByPetId(request.getId());
+        PetResponse getResponse = client.getPetById(request.getId());
         petId = getResponse.getId();
 
         assertPetFieldsMatch(request, getResponse);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"available",
+            "pending",
+            "sold"
+    })
+    @Tag("Positive")
+    @DisplayName("Проверка выборки питомцев по статусу")
+    @Owner("Nikita Tkachenko")
+    @Severity(SeverityLevel.BLOCKER)
+    @Feature("Ручка API выборки питомцев по статусу")
+    @Story("Юзер получает питомцев по статусу")
+    void getPetTestWithStatus200(String status) {
+        List<PetResponse> petResponses = client.getPetByStatus(status);
+
+        assertFalse(petResponses.isEmpty());
+        assertThat(petResponses)
+                .allMatch(p -> status.equals(p.getStatus()));
     }
 
     @Test
@@ -180,7 +198,8 @@ public class PetStoreTests {
     }
 
     @ParameterizedTest
-    @CsvSource({"pending", "sold"})
+    @CsvSource({"pending",
+            "sold"})
     @Tag("Positive")
     @DisplayName("Проверка изменения статуса питомца")
     @Owner("Nikita Tkachenko")
@@ -202,7 +221,7 @@ public class PetStoreTests {
                 .build();
 
         PetResponse putResponse = client.putPet(putRequest);
-        PetResponse getResponse = client.getByPetId(putRequest.getId());
+        PetResponse getResponse = client.getPetById(putRequest.getId());
 
         assertPetFieldsMatch(putRequest, putResponse);
         assertPetFieldsMatch(putRequest, getResponse);
@@ -244,21 +263,26 @@ public class PetStoreTests {
 
         client.createPet(postRequest);
 
-        client.deletePet(postRequest.getId());
+        Response response = client.deletePet(postRequest.getId());
 
-        Response getResponse = client.getPetExpected404(postRequest.getId());
-
-        assertEquals(HttpStatus.SC_NOT_FOUND, getResponse.getStatusCode());
-        assertEquals("Pet not found", getResponse.asString());
+        assertEquals(HttpStatus.SC_OK, response.getStatusCode());
+        assertEquals(postRequest.getId(), response.jsonPath().getLong("message"));
     }
 
-//    @Test
-//    @Tag("Negative")
-//    @DisplayName("Проверка удаления питомца")
-//    @Owner("Nikita Tkachenko")
-//    @Severity(SeverityLevel.BLOCKER)
-//    @Feature("Ручка API удаления питомца")
-//    @Story("Юзер удаляет питомца")
+    @Test
+    @Tag("Negative")
+    @DisplayName("Проверка удаления питомца с несуществующим id")
+    @Owner("Nikita Tkachenko")
+    @Severity(SeverityLevel.BLOCKER)
+    @Feature("Ручка API удаления питомца")
+    @Story("Юзер удаляет питомца")
+    void deletePetWithStatus404() {
+        Long fakeId = 9999L;
+
+        Response response = client.deletePetExpected404(fakeId);
+
+        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());
+    }
 
     @AfterEach
     void cleanUp() {

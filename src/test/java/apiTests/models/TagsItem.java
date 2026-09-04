@@ -8,7 +8,7 @@ public class TagsItem{
 	private String name;
 
 	@JsonProperty("id")
-	private Integer id;
+	private Long id;
 
 	public void setName(String name){
 		this.name = name;
@@ -18,11 +18,11 @@ public class TagsItem{
 		return name;
 	}
 
-	public void setId(Integer id){
+	public void setId(Long id){
 		this.id = id;
 	}
 
-	public Integer getId(){
+	public Long getId(){
 		return id;
 	}
 
@@ -33,7 +33,7 @@ public class TagsItem{
 	public static class Builder {
 		private final TagsItem item = new TagsItem();
 
-		public Builder id(Integer id) {
+		public Builder id(Long id) {
 			item.id = id;
 			return this;
 		}

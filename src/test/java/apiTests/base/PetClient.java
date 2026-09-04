@@ -5,9 +5,11 @@ import apiTests.models.PetResponse;
 import apiTests.specs.RequestSpec;
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
+
+import java.util.List;
 
 public class PetClient extends ApiBaseClient {
 
@@ -21,7 +23,7 @@ public class PetClient extends ApiBaseClient {
     public PetResponse createPet(PetRequest request) {
         return create(PET_ENDPOINT, request)
                 .then()
-                .log().all()
+                .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .as(PetResponse.class);
@@ -31,7 +33,7 @@ public class PetClient extends ApiBaseClient {
     public Response updatePetWithFormData(PetRequest request, Long id, String name, String status) {
         return updateWithFormData(PET_ENDPOINT, request, id, name, status)
                 .then()
-                .log().ifError()
+                .log().all()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
@@ -94,7 +96,7 @@ public class PetClient extends ApiBaseClient {
     }
 
     @Step("Получение питомца по его id: {id}")
-    public PetResponse getByPetId(Long id) {
+    public PetResponse getPetById(Long id) {
         return getById(PET_ENDPOINT, id)
                 .then()
                 .log().ifError()
@@ -103,15 +105,15 @@ public class PetClient extends ApiBaseClient {
                 .as(PetResponse.class);
     }
 
-//    @Step("Получение питомца с ошибкой 400")
-//    public Response getPetExpected400(Long id) {
-//        return getById(PET_ENDPOINT, id)
-//                .then()
-//                .log().all()
-//                .statusCode(HttpStatus.SC_BAD_REQUEST)
-//                .extract()
-//                .response();
-//    }
+    @Step("Получение питомцев по статусу")
+        public List<PetResponse> getPetByStatus(String status) {
+            return getByStatus(PET_ENDPOINT, status)
+                    .then()
+                    .log().ifError()
+                    .statusCode(HttpStatus.SC_OK)
+                    .extract()
+                    .as(new TypeRef<List<PetResponse>>(){});
+        }
 
     @Step("Получение питомца с ошибкой 404")
     public Response getPetExpected404(Long id) {
@@ -124,11 +126,23 @@ public class PetClient extends ApiBaseClient {
     }
 
     @Step("Удаление питомца по его id: {id}")
-    public void deletePet(Long id) {
-        delete(PET_ENDPOINT, id)
+    public Response deletePet(Long id) {
+        return delete(PET_ENDPOINT, id)
                 .then()
                 .log().ifError()
-                .statusCode(HttpStatus.SC_OK);
+                .statusCode(HttpStatus.SC_OK)
+                .extract()
+                .response();
+    }
+
+    @Step("Удаление питомца с несуществующим id")
+    public Response deletePetExpected404(Long id) {
+        return delete(PET_ENDPOINT, id)
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .extract()
+                .response();
     }
 
 }
