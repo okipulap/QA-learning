@@ -27,6 +27,17 @@ public class PetClient extends ApiBaseClient {
                 .as(PetResponse.class);
     }
 
+    @Step("Изменение питомца с помощью формы")
+    public Response updatePetWithFormData(PetRequest request, Long id, String name, String status) {
+        return updateWithFormData(PET_ENDPOINT, request, id, name, status)
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.SC_OK)
+                .extract()
+                .response();
+
+    }
+
     @Step("Создание питомца с некорректным JSON (400)")
     public Response createPetWithBrokenJson(String rawJson) {
         return RestAssured.given()

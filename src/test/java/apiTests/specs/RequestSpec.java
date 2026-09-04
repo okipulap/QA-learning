@@ -8,17 +8,30 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.qameta.allure.*;
+import io.restassured.specification.ResponseSpecification;
 
 public class RequestSpec {
 
     private static final String API_KEY = Dotenv.load().get("PETSTORE_API_KEY");
 
-    @Step("Создание спецификации запроса")
+    @Step("Создание дефолтной спецификации запроса")
     public static RequestSpecification defaultSpec() {
         return new RequestSpecBuilder()
-                .setBaseUri("http://localhost:8080/api/")
-                .setBasePath("v3/")
+                .setBaseUri("https://petstore.swagger.io/")
+                .setBasePath("v2/")
                 .setContentType(ContentType.JSON)
+                .setAccept(ContentType.JSON)
+                .addHeader("api_key", API_KEY)
+                .addFilter(new AllureRestAssured())
+                .build();
+    }
+
+    @Step("Создание спецификации запроса для form data запроса")
+    public static RequestSpecification formDataSpec() {
+        return new RequestSpecBuilder()
+                .setBaseUri("https://petstore.swagger.io/")
+                .setBasePath("v2/")
+                .setContentType(ContentType.URLENC)
                 .setAccept(ContentType.JSON)
                 .addHeader("api_key", API_KEY)
                 .addFilter(new AllureRestAssured())

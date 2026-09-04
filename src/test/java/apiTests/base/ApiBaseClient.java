@@ -1,5 +1,6 @@
 package apiTests.base;
 
+import apiTests.specs.RequestSpec;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -27,14 +28,12 @@ public abstract class ApiBaseClient {
     }
 
     @Step("Изменение объекта с помощью формы")
-    protected Response updateWithFormData(String endpoint, Object body, int id, String name, String status) {
+    protected Response updateWithFormData(String endpoint, Object body, Long id, String name, String status) {
         return RestAssured.given()
-                .spec(spec)
-                .contentType(ContentType.URLENC)
+                .spec(RequestSpec.formDataSpec())
                 .pathParam("id", id)
                 .formParam("name", name)
                 .formParam("status", status)
-                .body(body)
                 .when()
                 .post(endpoint + "/{id}")
                 .then()

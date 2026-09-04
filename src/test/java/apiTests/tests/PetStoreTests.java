@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import static org.junit.jupiter.api.Assertions.*;
-
+import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
@@ -100,9 +100,35 @@ public class PetStoreTests {
         PetRequest request = createDefaultPetRequest();
 
         PetResponse response = client.createPet(request);
-        petId = request.getId();
+        petId = response.getId();
 
         assertPetFieldsMatch(request, response);
+    }
+
+    @Test
+    @Tag("Positive")
+    @DisplayName("Проверка создания питомца с помощью формы")
+    @Owner("Nikita Tkachenko")
+    @Severity(SeverityLevel.BLOCKER)
+    @Feature("Ручка API изменения питомца с помощью формы")
+    @Story("Юзер создает питомца")
+    void updateWithFormDataTest() {
+        PetRequest postRequest = createDefaultPetRequest();
+        PetResponse postResponse = client.createPet(postRequest);
+
+        petId = postResponse.getId();
+
+        PetRequest formDataRequest = new PetRequest();
+        formDataRequest.setId(postRequest.getId());
+        formDataRequest.setName("form data name");
+        formDataRequest.setStatus("pending");
+
+        Response formDataResponse = client.updatePetWithFormData(
+                formDataRequest, formDataRequest.getId(),
+                formDataRequest.getName(), formDataRequest.getStatus());
+
+        assertThat(HttpStatus.SC_OK)
+                .isEqualTo(formDataResponse.statusCode());
     }
 
     @ParameterizedTest
@@ -132,7 +158,7 @@ public class PetStoreTests {
 
         client.createPet(request);
         PetResponse getResponse = client.getByPetId(request.getId());
-        petId = request.getId();
+        petId = getResponse.getId();
 
         assertPetFieldsMatch(request, getResponse);
     }
@@ -206,21 +232,33 @@ public class PetStoreTests {
         assertEquals("Pet not found", response.asString());
     }
 
+    @Test
+    @Tag("Positive")
+    @DisplayName("Проверка удаления питомца")
+    @Owner("Nikita Tkachenko")
+    @Severity(SeverityLevel.BLOCKER)
+    @Feature("Ручка API удаления питомца")
+    @Story("Юзер удаляет питомца")
+    void deletePetWithStatus200() {
+        PetRequest postRequest = createDefaultPetRequest();
+
+        client.createPet(postRequest);
+
+        client.deletePet(postRequest.getId());
+
+        Response getResponse = client.getPetExpected404(postRequest.getId());
+
+        assertEquals(HttpStatus.SC_NOT_FOUND, getResponse.getStatusCode());
+        assertEquals("Pet not found", getResponse.asString());
+    }
+
 //    @Test
-//    @Tag("Positive")
+//    @Tag("Negative")
 //    @DisplayName("Проверка удаления питомца")
 //    @Owner("Nikita Tkachenko")
 //    @Severity(SeverityLevel.BLOCKER)
 //    @Feature("Ручка API удаления питомца")
 //    @Story("Юзер удаляет питомца")
-//    void deletePetWithStatus200() {
-//        PetRequest postRequest = createDefaultPetRequest();
-//
-//        client.createPet(postRequest);
-//
-//        PetResponse response = client.deletePet(postRequest.getId());
-//
-//    }
 
     @AfterEach
     void cleanUp() {
