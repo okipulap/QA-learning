@@ -1,10 +1,7 @@
 package apiTests.tests;
 
 import apiTests.base.PetClient;
-import apiTests.models.Category;
-import apiTests.models.PetRequest;
-import apiTests.models.PetResponse;
-import apiTests.models.TagsItem;
+import apiTests.models.*;
 import io.qameta.allure.*;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
@@ -16,6 +13,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
+
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
@@ -128,6 +127,29 @@ public class PetStoreTests {
                 formDataRequest.getName(), formDataRequest.getStatus());
 
         assertEquals(HttpStatus.SC_OK, formDataResponse.getStatusCode());
+    }
+
+    @Test
+    @Tag("Positive")
+    @DisplayName("Проверка загрузки изображения питомца")
+    @Owner("Nikita Tkachenko")
+    @Severity(SeverityLevel.BLOCKER)
+    @Feature("Ручка API загрузки изображения питомца")
+    @Story("Юзер загружает изображение питомца")
+    void uploadPetImageTestWithStatus200() {
+        PetRequest request = createDefaultPetRequest();
+        PetResponse response = client.createPet(request);
+        petId = response.getId();
+
+        File image = new File("src/test/resources/pet.jpg");
+
+        ApiResponse uploadImageResponse = client.uploadPetImage(request.getId(), image);
+
+        assertEquals(HttpStatus.SC_OK, uploadImageResponse.getCode());
+        assertEquals("unknown", uploadImageResponse.getType());
+        assertTrue(uploadImageResponse
+                .getMessage()
+                .contains("File uploaded"));
     }
 
     @ParameterizedTest

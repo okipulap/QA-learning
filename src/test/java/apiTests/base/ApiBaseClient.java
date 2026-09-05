@@ -6,6 +6,9 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.qameta.allure.*;
+import org.apache.http.HttpStatus;
+
+import java.io.File;
 
 public abstract class ApiBaseClient {
 
@@ -22,6 +25,21 @@ public abstract class ApiBaseClient {
                 .body(body)
                 .when()
                 .post(endpoint)
+                .then()
+                .extract()
+                .response();
+    }
+
+    @Step("Загрузка изображения")
+    protected Response uploadImage(String endpoint, Long id, File image) {
+        return RestAssured.given()
+                .given()
+                .spec(RequestSpec.uploadImageSpec())
+                .pathParam("petId", id)
+                .multiPart("additionalMetadata", "test metadata")
+                .multiPart("file", image, "image/jpeg")
+                .when()
+                .post(endpoint + "/{petId}/uploadImage")
                 .then()
                 .extract()
                 .response();

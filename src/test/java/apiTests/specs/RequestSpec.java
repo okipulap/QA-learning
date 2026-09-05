@@ -26,12 +26,24 @@ public class RequestSpec {
                 .build();
     }
 
-    @Step("Создание спецификации запроса для form data запроса")
+    @Step("Создание спецификации запроса для form data")
     public static RequestSpecification formDataSpec() {
         return new RequestSpecBuilder()
                 .setBaseUri("https://petstore.swagger.io/")
                 .setBasePath("v2/")
                 .setContentType(ContentType.URLENC)
+                .setAccept(ContentType.JSON)
+                .addHeader("api_key", API_KEY)
+                .addFilter(new AllureRestAssured())
+                .build();
+    }
+
+    @Step("Создание спецификации запроса для запроса загрузки изображения")
+    public static RequestSpecification uploadImageSpec() {
+        return new RequestSpecBuilder()
+                .setBaseUri("https://petstore.swagger.io/")
+                .setBasePath("v2/")
+                .setContentType(ContentType.MULTIPART)
                 .setAccept(ContentType.JSON)
                 .addHeader("api_key", API_KEY)
                 .addFilter(new AllureRestAssured())

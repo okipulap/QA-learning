@@ -1,5 +1,6 @@
 package apiTests.base;
 
+import apiTests.models.ApiResponse;
 import apiTests.models.PetRequest;
 import apiTests.models.PetResponse;
 import apiTests.specs.RequestSpec;
@@ -9,6 +10,7 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 
+import java.io.File;
 import java.util.List;
 
 public class PetClient extends ApiBaseClient {
@@ -29,11 +31,21 @@ public class PetClient extends ApiBaseClient {
                 .as(PetResponse.class);
     }
 
+    @Step("Загрузка изображения питомцу")
+    public ApiResponse uploadPetImage(Long id, File image) {
+        return uploadImage(PET_ENDPOINT, id, image)
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.SC_OK)
+                .extract()
+                .as(ApiResponse.class);
+    }
+
     @Step("Изменение питомца с помощью формы")
     public Response updatePetWithFormData(PetRequest request, Long id, String name, String status) {
         return updateWithFormData(PET_ENDPOINT, request, id, name, status)
                 .then()
-                .log().all()
+                .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
