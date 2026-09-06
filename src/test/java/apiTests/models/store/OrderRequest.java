@@ -68,5 +68,5 @@ public class OrderRequest{
 
 	public String getStatus(){
 		return status;
-	}по
+	}
 }
