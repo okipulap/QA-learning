@@ -51,7 +51,7 @@ public class PetTests {
                 .name(PET_NAME)
                 .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
                 .tags(List.of(TagsItem.builder().id(TAG_ID).name(TAG_NAME).build()))
-                .photoUrls(List.of("http://example.com/photo.jpg"))
+                .photoUrls(List.of("https://example.com/photo.jpg"))
                 .status(status)
                 .build();
     }
@@ -244,7 +244,7 @@ public class PetTests {
         PetRequest putRequest = PetRequest.builder()
                 .id(postRequest.getId())
                 .name("putPet")
-                .photoUrls(List.of("http://example.com/photo.jpg"))
+                .photoUrls(List.of("https://example.com/photo.jpg"))
                 .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
                 .tags(List.of(TagsItem.builder().id(TAG_ID).name("путовый").build()))
                 .status(status)
