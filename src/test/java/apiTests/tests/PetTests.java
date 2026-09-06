@@ -2,6 +2,7 @@ package apiTests.tests;
 
 import apiTests.base.PetClient;
 import apiTests.models.*;
+import com.github.javafaker.Faker;
 import io.qameta.allure.*;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
-public class PetStoreTests {
+public class PetTests {
     private static PetClient client;
     private Long petId;
 
@@ -46,6 +47,7 @@ public class PetStoreTests {
                 .name(PET_NAME)
                 .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
                 .tags(List.of(TagsItem.builder().id(TAG_ID).name(TAG_NAME).build()))
+                .photoUrls(List.of("http://example.com/photo.jpg"))
                 .status(status)
                 .build();
     }
@@ -123,7 +125,7 @@ public class PetStoreTests {
         formDataRequest.setStatus("pending");
 
         Response formDataResponse = client.updatePetWithFormData(
-                formDataRequest, formDataRequest.getId(),
+                formDataRequest.getId(),
                 formDataRequest.getName(), formDataRequest.getStatus());
 
         assertEquals(HttpStatus.SC_OK, formDataResponse.getStatusCode());
@@ -216,7 +218,7 @@ public class PetStoreTests {
                 .nextLong(1_000_000_000L, Long.MAX_VALUE));
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());
-        assertEquals("Pet not found", response.asString());
+        assertEquals("Pet not found", response.jsonPath().getString("message"));
     }
 
     @ParameterizedTest
@@ -237,6 +239,7 @@ public class PetStoreTests {
         PetRequest putRequest = PetRequest.builder()
                 .id(postRequest.getId())
                 .name("putPet")
+                .photoUrls(List.of("http://example.com/photo.jpg"))
                 .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
                 .tags(List.of(TagsItem.builder().id(TAG_ID).name("путовый").build()))
                 .status(status)
@@ -255,13 +258,14 @@ public class PetStoreTests {
     @Owner("Nikita Tkachenko")
     @Severity(SeverityLevel.CRITICAL)
     @Feature("Ручка API изменения питомца")
-    @Story("Юзер изменяет статус питомца")
+    @Story("Юзер изменяет несуществующего питомца")
     void putPetWithStatus404() {
-        Long fakeId = 9999L;
+        Faker faker = new Faker();
 
         PetRequest request = PetRequest.builder()
-                .id(fakeId)
+                .id(faker.number().randomNumber())
                 .name("Error 404")
+                .photoUrls(List.of("http://example.com/photo.jpg"))
                 .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
                 .tags(List.of((TagsItem.builder().id(TAG_ID).name("пут метод").build())))
                 .status("available")
@@ -299,9 +303,9 @@ public class PetStoreTests {
     @Feature("Ручка API удаления питомца")
     @Story("Юзер удаляет питомца")
     void deletePetWithStatus404() {
-        Long fakeId = 9999L;
+        Faker faker = new Faker();
 
-        Response response = client.deletePetExpected404(fakeId);
+        Response response = client.deletePetExpected404(faker.number().randomNumber());
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());
     }

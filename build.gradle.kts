@@ -24,6 +24,8 @@ dependencies {
     testImplementation("io.rest-assured:rest-assured:6.0.0")
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
     implementation("io.github.cdimascio:dotenv-java:3.2.0")
+    testImplementation("io.rest-assured:json-schema-validator:6.0.0")
+    testImplementation("com.github.javafaker:javafaker:1.0.2")
 
     //JUnit5
     testImplementation(platform("org.junit:junit-bom:5.10.3"))

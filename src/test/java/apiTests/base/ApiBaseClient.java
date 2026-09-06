@@ -33,7 +33,6 @@ public abstract class ApiBaseClient {
     @Step("Загрузка изображения")
     protected Response uploadImage(String endpoint, Long id, File image) {
         return RestAssured.given()
-                .given()
                 .spec(RequestSpec.uploadImageSpec())
                 .pathParam("petId", id)
                 .multiPart("additionalMetadata", "test metadata")
@@ -46,7 +45,7 @@ public abstract class ApiBaseClient {
     }
 
     @Step("Изменение объекта с помощью формы")
-    protected Response updateWithFormData(String endpoint, Object body, Long id, String name, String status) {
+    protected Response updateWithFormData(String endpoint, Long id, String name, String status) {
         return RestAssured.given()
                 .spec(RequestSpec.formDataSpec())
                 .pathParam("id", id)
@@ -78,6 +77,17 @@ public abstract class ApiBaseClient {
                 .pathParam("id", id)
                 .when()
                 .get(endpoint + "/{id}")
+                .then()
+                .extract()
+                .response();
+    }
+
+    @Step("Получение объекта")
+    protected Response get(String endpoint) {
+        return RestAssured.given()
+                .spec(spec)
+                .when()
+                .get(endpoint)
                 .then()
                 .extract()
                 .response();

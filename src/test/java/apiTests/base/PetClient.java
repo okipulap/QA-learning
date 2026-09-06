@@ -13,6 +13,8 @@ import org.apache.http.HttpStatus;
 import java.io.File;
 import java.util.List;
 
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+
 public class PetClient extends ApiBaseClient {
 
     private static final String PET_ENDPOINT = "/pet";
@@ -27,6 +29,7 @@ public class PetClient extends ApiBaseClient {
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
+                .body(matchesJsonSchemaInClasspath("schemas/pet-response-schema.json"))
                 .extract()
                 .as(PetResponse.class);
     }
@@ -42,8 +45,8 @@ public class PetClient extends ApiBaseClient {
     }
 
     @Step("Изменение питомца с помощью формы")
-    public Response updatePetWithFormData(PetRequest request, Long id, String name, String status) {
-        return updateWithFormData(PET_ENDPOINT, request, id, name, status)
+    public Response updatePetWithFormData(Long id, String name, String status) {
+        return updateWithFormData(PET_ENDPOINT, id, name, status)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
@@ -73,18 +76,9 @@ public class PetClient extends ApiBaseClient {
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.SC_OK)
+                .body(matchesJsonSchemaInClasspath("schemas/pet-response-schema.json"))
                 .extract()
                 .as(PetResponse.class);
-    }
-
-    @Step("Изменение питомца с ошибкой 400")
-    public Response putPetExpected400(PetRequest request) {
-        return put(PET_ENDPOINT, request)
-                .then()
-                .log().ifError()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .extract()
-                .response();
     }
 
     @Step("Изменение питомца с ошибкой 404")
@@ -97,22 +91,13 @@ public class PetClient extends ApiBaseClient {
                 .response();
     }
 
-    @Step("Изменение питомца с ошибкой 405")
-    public Response putPetExpected405(PetRequest request) {
-        return put(PET_ENDPOINT, request)
-                .then()
-                .log().ifError()
-                .statusCode(HttpStatus.SC_METHOD_NOT_ALLOWED)
-                .extract()
-                .response();
-    }
-
     @Step("Получение питомца по его id: {id}")
     public PetResponse getPetById(Long id) {
         return getById(PET_ENDPOINT, id)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
+                .body(matchesJsonSchemaInClasspath("schemas/pet-response-schema.json"))
                 .extract()
                 .as(PetResponse.class);
     }
