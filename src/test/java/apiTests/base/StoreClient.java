@@ -9,7 +9,7 @@ import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
-public class StoreClient extends ApiBaseClient{
+public class StoreClient extends ApiBaseClient {
 
     private static final String STORE_ENDPOINT = "/store";
 

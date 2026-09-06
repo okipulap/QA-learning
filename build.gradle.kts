@@ -1,7 +1,7 @@
 plugins {
     id("java")
-    jacoco
     id("io.qameta.allure") version "4.1.0"
+    id("checkstyle")
 }
 
 group = "org.example"

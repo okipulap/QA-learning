@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class OrderRequest{
 
 	@JsonProperty("petId")
@@ -19,7 +19,7 @@ public class OrderRequest{
 	private int quantity;
 
 	@JsonProperty("id")
-	private Long id;
+	private int id;
 
 	@JsonProperty("shipDate")
 	private String shipDate;
@@ -29,52 +29,4 @@ public class OrderRequest{
 
 	@JsonProperty("status")
 	private String status;
-
-	public void setPetId(int petId){
-		this.petId = petId;
-	}
-
-	public int getPetId(){
-		return petId;
-	}
-
-	public void setQuantity(int quantity){
-		this.quantity = quantity;
-	}
-
-	public int getQuantity(){
-		return quantity;
-	}
-
-	public void setId(Long id){
-		this.id = id;
-	}
-
-	public Long getId(){
-		return id;
-	}
-
-	public void setShipDate(String shipDate){
-		this.shipDate = shipDate;
-	}
-
-	public String getShipDate(){
-		return shipDate;
-	}
-
-	public void setComplete(boolean complete){
-		this.complete = complete;
-	}
-
-	public boolean isComplete(){
-		return complete;
-	}
-
-	public void setStatus(String status){
-		this.status = status;
-	}
-
-	public String getStatus(){
-		return status;
-	}
 }
