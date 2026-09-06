@@ -1,4 +1,4 @@
-package apiTests.models;
+package apiTests.models.store;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

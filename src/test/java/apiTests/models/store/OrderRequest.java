@@ -1,4 +1,4 @@
-package apiTests.models;
+package apiTests.models.store;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,7 +11,7 @@ public class OrderRequest{
 	private int quantity;
 
 	@JsonProperty("id")
-	private int id;
+	private Long id;
 
 	@JsonProperty("shipDate")
 	private String shipDate;
@@ -38,11 +38,11 @@ public class OrderRequest{
 		return quantity;
 	}
 
-	public void setId(int id){
+	public void setId(Long id){
 		this.id = id;
 	}
 
-	public int getId(){
+	public Long getId(){
 		return id;
 	}
 
@@ -68,5 +68,5 @@ public class OrderRequest{
 
 	public String getStatus(){
 		return status;
-	}
+	}по
 }

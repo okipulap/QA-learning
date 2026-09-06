@@ -14,6 +14,11 @@ repositories {
 }
 
 dependencies {
+
+    //lombok
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
+
     // Allure
     testImplementation("io.qameta.allure:allure-assertj")
     testImplementation(platform("io.qameta.allure:allure-bom:$allureVersion"))

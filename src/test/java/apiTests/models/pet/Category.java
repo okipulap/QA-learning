@@ -1,8 +1,8 @@
-package apiTests.models;
+package apiTests.models.pet;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TagsItem{
+public class Category{
 
 	@JsonProperty("name")
 	private String name;
@@ -31,20 +31,20 @@ public class TagsItem{
 	}
 
 	public static class Builder {
-		private final TagsItem item = new TagsItem();
+		private final Category category = new Category();
 
 		public Builder id(Long id) {
-			item.id = id;
+			category.id = id;
 			return this;
 		}
 
 		public Builder name(String name) {
-			item.name = name;
+			category.name = name;
 			return this;
 		}
 
-		public TagsItem build() {
-			return item;
+		public Category build() {
+			return category;
 		}
 	}
 }

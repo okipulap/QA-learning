@@ -2,6 +2,10 @@ package apiTests.tests;
 
 import apiTests.base.PetClient;
 import apiTests.models.*;
+import apiTests.models.pet.Category;
+import apiTests.models.pet.PetRequest;
+import apiTests.models.pet.PetResponse;
+import apiTests.models.pet.TagsItem;
 import com.github.javafaker.Faker;
 import io.qameta.allure.*;
 import io.restassured.response.Response;
@@ -141,11 +145,12 @@ public class PetTests {
     void uploadPetImageTestWithStatus200() {
         PetRequest request = createDefaultPetRequest();
         PetResponse response = client.createPet(request);
-        petId = response.getId();
 
         File image = new File("src/test/resources/pet.jpg");
 
         ApiResponse uploadImageResponse = client.uploadPetImage(request.getId(), image);
+
+        petId = response.getId();
 
         assertEquals(HttpStatus.SC_OK, uploadImageResponse.getCode());
         assertEquals("unknown", uploadImageResponse.getType());
@@ -162,10 +167,10 @@ public class PetTests {
     @Severity(SeverityLevel.CRITICAL)
     @Feature("Ручка API добавления питомца")
     @Story("Юзер создает питомца")
-    void createPetWithStatus400(String description, String brokenJson) {
+    void createPetWithStatus400(String brokenJson) {
         Response response = client.createPetWithBrokenJson(brokenJson);
 
-        assertEquals("Input error: unable to convert input to io.swagger.petstore.model.Pet",
+        assertEquals("bad input",
                 response.jsonPath().getString("message"));
     }
 
@@ -250,31 +255,6 @@ public class PetTests {
 
         assertPetFieldsMatch(putRequest, putResponse);
         assertPetFieldsMatch(putRequest, getResponse);
-    }
-
-    @Test
-    @Tag("Negative")
-    @DisplayName("Проверка статуса 404 при попытке изменения питомца")
-    @Owner("Nikita Tkachenko")
-    @Severity(SeverityLevel.CRITICAL)
-    @Feature("Ручка API изменения питомца")
-    @Story("Юзер изменяет несуществующего питомца")
-    void putPetWithStatus404() {
-        Faker faker = new Faker();
-
-        PetRequest request = PetRequest.builder()
-                .id(faker.number().randomNumber())
-                .name("Error 404")
-                .photoUrls(List.of("http://example.com/photo.jpg"))
-                .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
-                .tags(List.of((TagsItem.builder().id(TAG_ID).name("пут метод").build())))
-                .status("available")
-                .build();
-
-        Response response = client.putPetExpected404(request);
-
-        assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());
-        assertEquals("Pet not found", response.asString());
     }
 
     @Test

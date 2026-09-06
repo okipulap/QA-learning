@@ -1,8 +1,8 @@
 package apiTests.base;
 
-import apiTests.models.InventoryResponse;
-import apiTests.models.OrderRequest;
-import apiTests.models.OrderResponse;
+import apiTests.models.store.InventoryResponse;
+import apiTests.models.store.OrderRequest;
+import apiTests.models.store.OrderResponse;
 import apiTests.specs.RequestSpec;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;

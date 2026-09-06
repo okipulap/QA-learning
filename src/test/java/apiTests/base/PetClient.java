@@ -1,8 +1,8 @@
 package apiTests.base;
 
 import apiTests.models.ApiResponse;
-import apiTests.models.PetRequest;
-import apiTests.models.PetResponse;
+import apiTests.models.pet.PetRequest;
+import apiTests.models.pet.PetResponse;
 import apiTests.specs.RequestSpec;
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;

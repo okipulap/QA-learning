@@ -1,6 +1,7 @@
-package apiTests.models;
+package apiTests.models.pet;
 
 import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PetResponse{
