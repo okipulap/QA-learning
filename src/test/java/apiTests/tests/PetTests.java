@@ -3,8 +3,7 @@ package apiTests.tests;
 import apiTests.base.PetClient;
 import apiTests.models.*;
 import apiTests.models.pet.Category;
-import apiTests.models.pet.PetRequest;
-import apiTests.models.pet.PetResponse;
+import apiTests.models.pet.Pet;
 import apiTests.models.pet.TagsItem;
 import com.github.javafaker.Faker;
 import io.qameta.allure.*;
@@ -24,30 +23,32 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
+@Epic("PetStore API: питомцы")
+@Owner("Nikita Tkachenko")
 public class PetTests {
     private static PetClient client;
     private Long petId;
+    private static final Faker faker = new Faker();
 
-    private static final String PET_NAME = "autoPet";
+    private static final String PET_NAME = faker.animal().name();
     private static final String STATUS_AVAILABLE = "available";
     private static final Long CATEGORY_ID = 1L;
-    private static final String CATEGORY_NAME = "Dogs";
+    private static final String CATEGORY_NAME = faker.dog().gender();
     private static final Long TAG_ID = 1L;
-    private static final String TAG_NAME = "тестик";
+    private static final String TAG_NAME = faker.dog().breed();
 
-    @Epic("PetStore API: питомцы")
     @BeforeAll
     public static void setUp() {
         client = new PetClient();
     }
 
-    private PetRequest createDefaultPetRequest() {
+    private Pet createDefaultPetRequest() {
         return createPetRequestWithStatus(STATUS_AVAILABLE);
     }
 
-    private PetRequest createPetRequestWithStatus(String status) {
-        return PetRequest.builder()
-                .id(ThreadLocalRandom.current().nextLong(1, 1_000_000))
+    private Pet createPetRequestWithStatus(String status) {
+        return Pet.builder()
+                .id(faker.number().randomNumber())
                 .name(PET_NAME)
                 .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
                 .tags(List.of(TagsItem.builder().id(TAG_ID).name(TAG_NAME).build()))
@@ -56,7 +57,7 @@ public class PetTests {
                 .build();
     }
 
-    private void assertPetFieldsMatch(PetRequest request, PetResponse response) {
+    private void assertPetFieldsMatch(Pet request, Pet response) {
         SoftAssertions soft = new SoftAssertions();
         soft.assertThat(request.getId()).isEqualTo(response.getId());
         soft.assertThat(request.getName()).isEqualTo(response.getName());
@@ -97,14 +98,13 @@ public class PetTests {
     @Test
     @Tag("Positive")
     @DisplayName("Проверка создания питомца")
-    @Owner("Nikita Tkachenko")
     @Severity(SeverityLevel.BLOCKER)
     @Feature("Ручка API добавления питомца")
     @Story("Юзер создает питомца")
     void createPetTest() {
-        PetRequest request = createDefaultPetRequest();
+        Pet request = createDefaultPetRequest();
 
-        PetResponse response = client.createPet(request);
+        Pet response = client.createPet(request);
         petId = response.getId();
 
         assertPetFieldsMatch(request, response);
@@ -113,17 +113,16 @@ public class PetTests {
     @Test
     @Tag("Positive")
     @DisplayName("Проверка создания питомца с помощью формы")
-    @Owner("Nikita Tkachenko")
-    @Severity(SeverityLevel.BLOCKER)
+    @Severity(SeverityLevel.NORMAL)
     @Feature("Ручка API изменения питомца с помощью формы")
-    @Story("Юзер создает питомца")
+    @Story("Юзер создает питомца с помощью формы")
     void updateWithFormDataTest() {
-        PetRequest postRequest = createDefaultPetRequest();
-        PetResponse postResponse = client.createPet(postRequest);
+        Pet postRequest = createDefaultPetRequest();
+        Pet postResponse = client.createPet(postRequest);
 
         petId = postResponse.getId();
 
-        PetRequest formDataRequest = new PetRequest();
+        Pet formDataRequest = new Pet();
         formDataRequest.setId(postRequest.getId());
         formDataRequest.setName("form data name");
         formDataRequest.setStatus("pending");
@@ -138,13 +137,12 @@ public class PetTests {
     @Test
     @Tag("Positive")
     @DisplayName("Проверка загрузки изображения питомца")
-    @Owner("Nikita Tkachenko")
-    @Severity(SeverityLevel.BLOCKER)
+    @Severity(SeverityLevel.CRITICAL)
     @Feature("Ручка API загрузки изображения питомца")
     @Story("Юзер загружает изображение питомца")
     void uploadPetImageTestWithStatus200() {
-        PetRequest request = createDefaultPetRequest();
-        PetResponse response = client.createPet(request);
+        Pet request = createDefaultPetRequest();
+        Pet response = client.createPet(request);
 
         File image = new File("src/test/resources/pet.jpg");
 
@@ -153,39 +151,33 @@ public class PetTests {
         petId = response.getId();
 
         assertEquals(HttpStatus.SC_OK, uploadImageResponse.getCode());
-        assertEquals("unknown", uploadImageResponse.getType());
-        assertTrue(uploadImageResponse
-                .getMessage()
-                .contains("File uploaded"));
     }
 
     @ParameterizedTest
     @MethodSource("invalidPetRequests")
     @Tag("Negative")
     @DisplayName("Проверка создания питомца с невалидными id, name")
-    @Owner("Nikita Tkachenko")
-    @Severity(SeverityLevel.CRITICAL)
+    @Severity(SeverityLevel.TRIVIAL)
     @Feature("Ручка API добавления питомца")
     @Story("Юзер создает питомца")
     void createPetWithStatus400(String brokenJson) {
         Response response = client.createPetWithBrokenJson(brokenJson);
 
-        assertEquals("bad input",
+        assertEquals("Input error: unable to convert input to io.swagger.petstore.model.Pet",
                 response.jsonPath().getString("message"));
     }
 
     @Test
     @Tag("Positive")
     @DisplayName("Проверка выборки питомца")
-    @Owner("Nikita Tkachenko")
     @Severity(SeverityLevel.BLOCKER)
     @Feature("Ручка API выборки питомца")
     @Story("Юзер получает питомца")
     void getPetTestWithStatusCode200() {
-        PetRequest request = createDefaultPetRequest();
+        Pet request = createDefaultPetRequest();
 
         client.createPet(request);
-        PetResponse getResponse = client.getPetById(request.getId());
+        Pet getResponse = client.getPetById(request.getId());
         petId = getResponse.getId();
 
         assertPetFieldsMatch(request, getResponse);
@@ -198,12 +190,11 @@ public class PetTests {
     })
     @Tag("Positive")
     @DisplayName("Проверка выборки питомцев по статусу")
-    @Owner("Nikita Tkachenko")
-    @Severity(SeverityLevel.BLOCKER)
+    @Severity(SeverityLevel.CRITICAL)
     @Feature("Ручка API выборки питомцев по статусу")
     @Story("Юзер получает питомцев по статусу")
     void getPetTestWithStatus200(String status) {
-        List<PetResponse> petResponses = client.getPetByStatus(status);
+        List<Pet> petResponses = client.getPetByStatus(status);
 
         assertFalse(petResponses.isEmpty());
         assertThat(petResponses)
@@ -213,8 +204,7 @@ public class PetTests {
     @Test
     @Tag("Negative")
     @DisplayName("Проверка статуса 404 при ненахождении питомца")
-    @Owner("Nikita Tkachenko")
-    @Severity(SeverityLevel.CRITICAL)
+    @Severity(SeverityLevel.NORMAL)
     @Feature("Ручка API выборки питомца")
     @Story("Юзер получает питомца")
     void getPetWithStatus404() {
@@ -223,7 +213,7 @@ public class PetTests {
                 .nextLong(1_000_000_000L, Long.MAX_VALUE));
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());
-        assertEquals("Pet not found", response.jsonPath().getString("message"));
+        assertEquals("Pet not found", response.asString());
     }
 
     @ParameterizedTest
@@ -231,17 +221,16 @@ public class PetTests {
             "sold"})
     @Tag("Positive")
     @DisplayName("Проверка изменения статуса питомца")
-    @Owner("Nikita Tkachenko")
-    @Severity(SeverityLevel.BLOCKER)
+    @Severity(SeverityLevel.MINOR)
     @Feature("Ручка API изменения статуса питомца")
     @Story("Юзер изменяет статус питомца")
     void putPetWithStatus200(String status) {
-        PetRequest postRequest = createDefaultPetRequest();
+        Pet postRequest = createDefaultPetRequest();
 
-        PetResponse createResponse = client.createPet(postRequest);
+        Pet createResponse = client.createPet(postRequest);
         petId = createResponse.getId();
 
-        PetRequest putRequest = PetRequest.builder()
+        Pet putRequest = Pet.builder()
                 .id(postRequest.getId())
                 .name("putPet")
                 .photoUrls(List.of("https://example.com/photo.jpg"))
@@ -250,8 +239,8 @@ public class PetTests {
                 .status(status)
                 .build();
 
-        PetResponse putResponse = client.putPet(putRequest);
-        PetResponse getResponse = client.getPetById(putRequest.getId());
+        Pet putResponse = client.putPet(putRequest);
+        Pet getResponse = client.getPetById(putRequest.getId());
 
         assertPetFieldsMatch(putRequest, putResponse);
         assertPetFieldsMatch(putRequest, getResponse);
@@ -260,31 +249,28 @@ public class PetTests {
     @Test
     @Tag("Positive")
     @DisplayName("Проверка удаления питомца")
-    @Owner("Nikita Tkachenko")
     @Severity(SeverityLevel.BLOCKER)
     @Feature("Ручка API удаления питомца")
     @Story("Юзер удаляет питомца")
     void deletePetWithStatus200() {
-        PetRequest postRequest = createDefaultPetRequest();
+        Pet postRequest = createDefaultPetRequest();
 
         client.createPet(postRequest);
 
         Response response = client.deletePet(postRequest.getId());
 
         assertEquals(HttpStatus.SC_OK, response.getStatusCode());
-        assertEquals(postRequest.getId(), response.jsonPath().getLong("message"));
+        assertEquals("Pet deleted", response.asString());
     }
 
+    @Disabled("На локальном сервере не существует 404 ошибки у удаления, тест работает вне локального окружения")
     @Test
     @Tag("Negative")
     @DisplayName("Проверка удаления питомца с несуществующим id")
-    @Owner("Nikita Tkachenko")
-    @Severity(SeverityLevel.BLOCKER)
+    @Severity(SeverityLevel.NORMAL)
     @Feature("Ручка API удаления питомца")
     @Story("Юзер удаляет питомца")
     void deletePetWithStatus404() {
-        Faker faker = new Faker();
-
         Response response = client.deletePetExpected404(faker.number().randomNumber());
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());

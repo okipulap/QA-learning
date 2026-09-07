@@ -10,16 +10,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderRequest{
+public class OrderRequest {
 
 	@JsonProperty("petId")
-	private int petId;
+	private Long petId;
 
 	@JsonProperty("quantity")
 	private int quantity;
 
 	@JsonProperty("id")
-	private int id;
+	private Long id;
 
 	@JsonProperty("shipDate")
 	private String shipDate;

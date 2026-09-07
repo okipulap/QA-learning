@@ -1,4 +1,4 @@
-package apiTests.models.store;
+package apiTests.models.pet;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -6,27 +6,29 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderResponse {
+public class Pet {
 
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("petId")
-    private Long petId;
+    @JsonProperty("name")
+    private String name;
 
-    @JsonProperty("quantity")
-    private int quantity;
+    @JsonProperty("category")
+    private Category category;
 
-    @JsonProperty("shipDate")
-    private String shipDate;
+    @JsonProperty("photoUrls")
+    private List<String> photoUrls;
+
+    @JsonProperty("tags")
+    private List<TagsItem> tags;
 
     @JsonProperty("status")
     private String status;
-
-    @JsonProperty("complete")
-    private boolean complete;
 }

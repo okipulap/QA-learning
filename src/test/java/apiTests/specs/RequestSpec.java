@@ -30,11 +30,11 @@ public class RequestSpec {
                 .setContentType(ContentType.URLENC));
     }
 
-    @Step("Создание спецификации запроса для запроса загрузки изображения")
-    public static RequestSpecification uploadImageSpec() {
-        return baseSpec(new RequestSpecBuilder()
-                .setContentType(ContentType.MULTIPART));
-    }
+//    @Step("Создание спецификации запроса для запроса загрузки изображения")
+//    public static RequestSpecification uploadImageSpec() {
+//        return baseSpec(new RequestSpecBuilder()
+//                .setContentType(ContentType.BINARY));
+//    }
 
     private static RequestSpecification baseSpec(RequestSpecBuilder builder) {
         return builder

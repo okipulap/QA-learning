@@ -1,17 +1,18 @@
 package apiTests.base;
 
 import apiTests.models.ApiResponse;
-import apiTests.models.pet.PetRequest;
-import apiTests.models.pet.PetResponse;
+import apiTests.models.pet.Pet;
 import apiTests.specs.RequestSpec;
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
@@ -24,21 +25,28 @@ public class PetClient extends ApiBaseClient {
     }
 
     @Step("Создание питомца")
-    public PetResponse createPet(PetRequest request) {
-        return create(PET_ENDPOINT, request)
+    public Pet createPet(Pet request) {
+        return post(PET_ENDPOINT, request)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
                 .body(matchesJsonSchemaInClasspath("schemas/pet-response-schema.json"))
                 .extract()
-                .as(PetResponse.class);
+                .as(Pet.class);
     }
 
     @Step("Загрузка изображения питомцу")
     public ApiResponse uploadPetImage(Long id, File image) {
-        return uploadImage(PET_ENDPOINT, id, image)
+        return RestAssured.given()
+                .spec(RequestSpec.defaultSpec())
+                .pathParam("petId", id)
+                .queryParam("additionalMetadata", "test metadata")
+                .contentType(ContentType.BINARY)
+                .body(image)
+                .when()
+                .post(PET_ENDPOINT + "/{petId}/uploadImage")
                 .then()
-                .log().ifError()
+                .log().all()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .as(ApiResponse.class);
@@ -46,13 +54,18 @@ public class PetClient extends ApiBaseClient {
 
     @Step("Изменение питомца с помощью формы")
     public Response updatePetWithFormData(Long id, String name, String status) {
-        return updateWithFormData(PET_ENDPOINT, id, name, status)
+        return RestAssured.given()
+                .spec(RequestSpec.formDataSpec())
+                .pathParam("id", id)
+                .queryParam("name", name)
+                .queryParam("status", status)
+                .when()
+                .post(PET_ENDPOINT + "/{id}")
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
-
     }
 
     @Step("Создание питомца с некорректным JSON (400)")
@@ -69,20 +82,19 @@ public class PetClient extends ApiBaseClient {
                 .response();
     }
 
-
     @Step("Изменение питомца по его id: {id}")
-    public PetResponse putPet(PetRequest request) {
+    public Pet putPet(Pet request) {
         return put(PET_ENDPOINT, request)
                 .then()
                 .log().all()
                 .statusCode(HttpStatus.SC_OK)
                 .body(matchesJsonSchemaInClasspath("schemas/pet-response-schema.json"))
                 .extract()
-                .as(PetResponse.class);
+                .as(Pet.class);
     }
 
     @Step("Изменение питомца с ошибкой 404")
-    public Response putPetExpected404(PetRequest request) {
+    public Response putPetExpected404(Pet request) {
         return put(PET_ENDPOINT, request)
                 .then()
                 .log().ifError()
@@ -92,29 +104,41 @@ public class PetClient extends ApiBaseClient {
     }
 
     @Step("Получение питомца по его id: {id}")
-    public PetResponse getPetById(Long id) {
-        return getById(PET_ENDPOINT, id)
+    public Pet getPetById(Long id) {
+        return get(PET_ENDPOINT, id)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
                 .body(matchesJsonSchemaInClasspath("schemas/pet-response-schema.json"))
                 .extract()
-                .as(PetResponse.class);
+                .as(Pet.class);
     }
 
-    @Step("Получение питомцев по статусу")
-        public List<PetResponse> getPetByStatus(String status) {
-            return getByStatus(PET_ENDPOINT, status)
-                    .then()
-                    .log().ifError()
-                    .statusCode(HttpStatus.SC_OK)
-                    .extract()
-                    .as(new TypeRef<List<PetResponse>>(){});
-        }
+    @Step("Получение питомцев по статусу: {status}")
+    public List<Pet> getPetByStatus(String status) {
+        return get(PET_ENDPOINT + "/findByStatus", Map.of("status", status))
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.SC_OK)
+                .extract()
+                .as(new TypeRef<List<Pet>>() {
+                });
+    }
+
+    @Step("Получение питомцев по тегу: {tags}")
+    public List<Pet> getPetByTags(String tags) {
+        return get(PET_ENDPOINT + "/findByTags", Map.of("tags", tags))
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.SC_OK)
+                .extract()
+                .as(new TypeRef<List<Pet>>() {
+                });
+    }
 
     @Step("Получение питомца с ошибкой 404")
     public Response getPetExpected404(Long id) {
-        return getById(PET_ENDPOINT, id)
+        return get(PET_ENDPOINT, id)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_NOT_FOUND)
@@ -141,5 +165,4 @@ public class PetClient extends ApiBaseClient {
                 .extract()
                 .response();
     }
-
 }

@@ -1,0 +1,6 @@
+services:
+  petstore:
+    image: swaggerapi/petstore3:1.0.27
+    container_name: petstore
+    ports:
+      - "8080:8080"

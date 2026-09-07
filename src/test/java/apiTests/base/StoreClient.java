@@ -29,17 +29,18 @@ public class StoreClient extends ApiBaseClient {
 
     @Step("Создание заказа")
     public OrderResponse postOrder(OrderRequest request) {
-        return create(STORE_ENDPOINT, request)
+        return post(STORE_ENDPOINT, request)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
+                .body(matchesJsonSchemaInClasspath("schemas/order-response-schema.json"))
                 .extract()
                 .as(OrderResponse.class);
     }
 
     @Step("Поиск заказа по его id: {id}")
     public OrderResponse getOrderById(Long id) {
-        return getById(STORE_ENDPOINT, id)
+        return get(STORE_ENDPOINT, id)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
