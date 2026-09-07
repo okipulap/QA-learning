@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderResponse {
+public class Order {
 
     @JsonProperty("id")
     private Long id;

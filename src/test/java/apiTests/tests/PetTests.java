@@ -30,6 +30,7 @@ public class PetTests {
     private Long petId;
     private static final Faker faker = new Faker();
 
+    private static final Long PET_ID = faker.number().randomNumber();
     private static final String PET_NAME = faker.animal().name();
     private static final String STATUS_AVAILABLE = "available";
     private static final Long CATEGORY_ID = 1L;
@@ -48,7 +49,7 @@ public class PetTests {
 
     private Pet createPetRequestWithStatus(String status) {
         return Pet.builder()
-                .id(faker.number().randomNumber())
+                .id(PET_ID)
                 .name(PET_NAME)
                 .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
                 .tags(List.of(TagsItem.builder().id(TAG_ID).name(TAG_NAME).build()))

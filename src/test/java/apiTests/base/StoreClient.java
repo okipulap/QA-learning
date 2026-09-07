@@ -1,8 +1,7 @@
 package apiTests.base;
 
 import apiTests.models.store.InventoryResponse;
-import apiTests.models.store.OrderRequest;
-import apiTests.models.store.OrderResponse;
+import apiTests.models.store.Order;
 import apiTests.specs.RequestSpec;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
@@ -11,7 +10,8 @@ import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInC
 
 public class StoreClient extends ApiBaseClient {
 
-    private static final String STORE_ENDPOINT = "/store";
+    private static final String STORE_INVENTORY_ENDPOINT = "/store/inventory";
+    private static final String STORE_ENDPOINT = "/store/order";
 
     public StoreClient() {
         super(RequestSpec.defaultSpec());
@@ -19,7 +19,7 @@ public class StoreClient extends ApiBaseClient {
 
     @Step("Вывод количества заказов со статусами")
     public InventoryResponse getInventory() {
-        return get(STORE_ENDPOINT + "/inventory")
+        return get(STORE_INVENTORY_ENDPOINT)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
@@ -28,25 +28,25 @@ public class StoreClient extends ApiBaseClient {
     }
 
     @Step("Создание заказа")
-    public OrderResponse postOrder(OrderRequest request) {
+    public Order postOrder(Order request) {
         return post(STORE_ENDPOINT, request)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
                 .body(matchesJsonSchemaInClasspath("schemas/order-response-schema.json"))
                 .extract()
-                .as(OrderResponse.class);
+                .as(Order.class);
     }
 
     @Step("Поиск заказа по его id: {id}")
-    public OrderResponse getOrderById(Long id) {
+    public Order getOrderById(Long id) {
         return get(STORE_ENDPOINT, id)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
                 .body(matchesJsonSchemaInClasspath("schemas/order-response-schema.json"))
                 .extract()
-                .as(OrderResponse.class);
+                .as(Order.class);
     }
 
     @Step("Удаление заказа по id: {id}")
