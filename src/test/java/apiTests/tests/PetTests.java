@@ -128,11 +128,13 @@ public class PetTests {
         formDataRequest.setName("form data name");
         formDataRequest.setStatus("pending");
 
-        Response formDataResponse = client.updatePetWithFormData(
+        Pet formDataResponse = client.updatePetWithFormData(
                 formDataRequest.getId(),
                 formDataRequest.getName(), formDataRequest.getStatus());
 
-        assertEquals(HttpStatus.SC_OK, formDataResponse.getStatusCode());
+        assertNotNull(formDataResponse);
+        assertEquals(formDataRequest.getName(), formDataResponse.getName());
+        assertEquals(formDataRequest.getStatus(), formDataResponse.getStatus());
     }
 
     @Test
@@ -141,17 +143,25 @@ public class PetTests {
     @Severity(SeverityLevel.CRITICAL)
     @Feature("Ручка API загрузки изображения питомца")
     @Story("Юзер загружает изображение питомца")
-    void uploadPetImageTestWithStatus200() {
+    @Description("""
+    Тест выполнен на публичной версии Swagger Petstore.
+    Локальная реализация данного endpoint имеет
+    расхождение с ожидаемым поведением.
+    """)
+    void uploadPetImageTestWithStatus200() throws Exception {
         Pet request = createDefaultPetRequest();
         Pet response = client.createPet(request);
 
-        File image = new File("src/test/resources/pet.jpg");
+        File image = new File(getClass().getResource("/pet.jpg").toURI());
 
-        ApiResponse uploadImageResponse = client.uploadPetImage(request.getId(), image);
+        ApiResponse uploadImageResponse = client.uploadPetImage(response.getId(), image);
 
         petId = response.getId();
 
-        assertEquals(HttpStatus.SC_OK, uploadImageResponse.getCode());
+        assertNotNull(uploadImageResponse);
+        assertEquals(200, uploadImageResponse.getCode());
+        assertTrue(uploadImageResponse.getMessage().contains("pet.jpg"));
+
     }
 
     @ParameterizedTest
@@ -161,7 +171,7 @@ public class PetTests {
     @Severity(SeverityLevel.TRIVIAL)
     @Feature("Ручка API добавления питомца")
     @Story("Юзер создает питомца")
-    void createPetWithStatus400(String brokenJson) {
+    void createPetTestWithStatus400(String brokenJson) {
         Response response = client.createPetWithBrokenJson(brokenJson);
 
         assertEquals("Input error: unable to convert input to io.swagger.petstore.model.Pet",
@@ -208,10 +218,9 @@ public class PetTests {
     @Severity(SeverityLevel.NORMAL)
     @Feature("Ручка API выборки питомца")
     @Story("Юзер получает питомца")
-    void getPetWithStatus404() {
+    void getPetTestWithStatus404() {
 
-        Response response = client.getPetExpected404(ThreadLocalRandom.current()
-                .nextLong(1_000_000_000L, Long.MAX_VALUE));
+        Response response = client.getPetExpected404(faker.number().randomNumber());
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());
         assertEquals("Pet not found", response.asString());
@@ -225,7 +234,7 @@ public class PetTests {
     @Severity(SeverityLevel.MINOR)
     @Feature("Ручка API изменения статуса питомца")
     @Story("Юзер изменяет статус питомца")
-    void putPetWithStatus200(String status) {
+    void putPetTestWithStatus200(String status) {
         Pet postRequest = createDefaultPetRequest();
 
         Pet createResponse = client.createPet(postRequest);
@@ -253,7 +262,7 @@ public class PetTests {
     @Severity(SeverityLevel.BLOCKER)
     @Feature("Ручка API удаления питомца")
     @Story("Юзер удаляет питомца")
-    void deletePetWithStatus200() {
+    void deletePetTestWithStatus200() {
         Pet postRequest = createDefaultPetRequest();
 
         client.createPet(postRequest);
@@ -264,14 +273,13 @@ public class PetTests {
         assertEquals("Pet deleted", response.asString());
     }
 
-    @Disabled("На локальном сервере не существует 404 ошибки у удаления, тест работает вне локального окружения")
     @Test
     @Tag("Negative")
     @DisplayName("Проверка удаления питомца с несуществующим id")
     @Severity(SeverityLevel.NORMAL)
     @Feature("Ручка API удаления питомца")
     @Story("Юзер удаляет питомца")
-    void deletePetWithStatus404() {
+    void deletePetTestWithStatus404() {
         Response response = client.deletePetExpected404(faker.number().randomNumber());
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());

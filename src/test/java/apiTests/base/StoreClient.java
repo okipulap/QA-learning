@@ -14,7 +14,7 @@ public class StoreClient extends ApiBaseClient {
     private static final String STORE_ENDPOINT = "/store/order";
 
     public StoreClient() {
-        super(RequestSpec.defaultSpec());
+        super(RequestSpec.defaultLocalSpec());
     }
 
     @Step("Вывод количества заказов со статусами")
@@ -47,6 +47,16 @@ public class StoreClient extends ApiBaseClient {
                 .body(matchesJsonSchemaInClasspath("schemas/order-response-schema.json"))
                 .extract()
                 .as(Order.class);
+    }
+
+    @Step("Поиск заказа по его id: {id}")
+    public Response getOrderExpected404(Long id) {
+        return get(STORE_ENDPOINT, id)
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .extract()
+                .response();
     }
 
     @Step("Удаление заказа по id: {id}")

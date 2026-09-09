@@ -6,7 +6,6 @@ import apiTests.specs.RequestSpec;
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 
@@ -21,7 +20,7 @@ public class PetClient extends ApiBaseClient {
     private static final String PET_ENDPOINT = "/pet";
 
     public PetClient() {
-        super(RequestSpec.defaultSpec());
+        super(RequestSpec.defaultLocalSpec());
     }
 
     @Step("Создание питомца")
@@ -38,11 +37,10 @@ public class PetClient extends ApiBaseClient {
     @Step("Загрузка изображения питомцу")
     public ApiResponse uploadPetImage(Long id, File image) {
         return RestAssured.given()
-                .spec(RequestSpec.defaultSpec())
+                .spec(RequestSpec.uploadImageSpec())
                 .pathParam("petId", id)
-                .queryParam("additionalMetadata", "test metadata")
-                .contentType(ContentType.BINARY)
-                .body(image)
+                .multiPart("file", image)
+                .multiPart("additionalMetadata", "test metadata")
                 .when()
                 .post(PET_ENDPOINT + "/{petId}/uploadImage")
                 .then()
@@ -53,7 +51,7 @@ public class PetClient extends ApiBaseClient {
     }
 
     @Step("Изменение питомца с помощью формы")
-    public Response updatePetWithFormData(Long id, String name, String status) {
+    public Pet updatePetWithFormData(Long id, String name, String status) {
         return RestAssured.given()
                 .spec(RequestSpec.formDataSpec())
                 .pathParam("id", id)
@@ -65,7 +63,7 @@ public class PetClient extends ApiBaseClient {
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
-                .response();
+                .as(Pet.class);
     }
 
     @Step("Создание питомца с некорректным JSON (400)")
@@ -158,7 +156,11 @@ public class PetClient extends ApiBaseClient {
 
     @Step("Удаление питомца с несуществующим id")
     public Response deletePetExpected404(Long id) {
-        return delete(PET_ENDPOINT, id)
+        return RestAssured.given()
+                .spec(RequestSpec.publicSpec())
+                .pathParam("id", id)
+                .when()
+                .delete(PET_ENDPOINT + "/{id}")
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_NOT_FOUND)

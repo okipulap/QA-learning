@@ -114,6 +114,18 @@ public class StoreTests {
     }
 
     @Test
+    @Tag("Negative")
+    @DisplayName("Проверка статуса 404 при ненахождении заказа")
+    @Severity(SeverityLevel.NORMAL)
+    @Feature("Ручка API выборки заказа")
+    @Story("Юзер получает заказ")
+    void getOrderTestWithStatus404() {
+        Response response = client.getOrderExpected404(faker.number().randomNumber());
+
+        assertEquals("Order not found", response.asString());
+    }
+
+    @Test
     @Tag("Positive")
     @DisplayName("Удаление заказа")
     @Severity(SeverityLevel.BLOCKER)
