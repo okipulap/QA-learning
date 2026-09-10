@@ -46,7 +46,7 @@ public abstract class ApiBaseClient {
                 .response();
     }
 
-    protected Response get(String endpoint, Long id) {
+    protected Response getWithPathParam(String endpoint, Long id) {
         return RestAssured.given()
                 .spec(spec)
                 .pathParam("id", id)
@@ -57,7 +57,7 @@ public abstract class ApiBaseClient {
                 .response();
     }
 
-    protected Response get(String endpoint, Map<String, String> queryParams) {
+    protected Response getWithQueryParams(String endpoint, Map<String, String> queryParams) {
         RequestSpecification request = RestAssured.given().spec(spec);
         queryParams.forEach(request::queryParam);
         return request.when()

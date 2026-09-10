@@ -40,7 +40,7 @@ public class StoreClient extends ApiBaseClient {
 
     @Step("Поиск заказа по его id: {id}")
     public Order getOrderById(Long id) {
-        return get(STORE_ENDPOINT, id)
+        return getWithPathParam(STORE_ENDPOINT, id)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
@@ -51,7 +51,7 @@ public class StoreClient extends ApiBaseClient {
 
     @Step("Поиск заказа по его id: {id}")
     public Response getOrderExpected404(Long id) {
-        return get(STORE_ENDPOINT, id)
+        return getWithPathParam(STORE_ENDPOINT, id)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_NOT_FOUND)

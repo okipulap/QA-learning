@@ -60,10 +60,24 @@ public class PetTests {
 
     private void assertPetFieldsMatch(Pet request, Pet response) {
         SoftAssertions soft = new SoftAssertions();
-        soft.assertThat(request.getId()).isEqualTo(response.getId());
-        soft.assertThat(request.getName()).isEqualTo(response.getName());
-        soft.assertThat(request.getCategory()).usingRecursiveComparison().isEqualTo(response.getCategory());
-        soft.assertThat(request.getTags()).usingRecursiveComparison().isEqualTo(response.getTags());
+        soft.assertThat(request.getId())
+                .isEqualTo(response.getId());
+
+        soft.assertThat(request.getName())
+                .isEqualTo(response.getName());
+
+        soft.assertThat(request.getCategory())
+                .usingRecursiveComparison()
+                .isEqualTo(response.getCategory());
+
+        soft.assertThat(request.getTags())
+                .usingRecursiveComparison()
+                .isEqualTo(response.getTags());
+
+        soft.assertThat(request.getPhotoUrls())
+                .isNotEmpty()
+                .allMatch(url -> url.startsWith("https"));
+
         soft.assertAll();
     }
 
@@ -113,10 +127,10 @@ public class PetTests {
 
     @Test
     @Tag("Positive")
-    @DisplayName("Проверка создания питомца с помощью формы")
+    @DisplayName("Проверка изменения питомца с помощью формы")
     @Severity(SeverityLevel.NORMAL)
     @Feature("Ручка API изменения питомца с помощью формы")
-    @Story("Юзер создает питомца с помощью формы")
+    @Story("Юзер создает изменения с помощью формы")
     void updateWithFormDataTest() {
         Pet postRequest = createDefaultPetRequest();
         Pet postResponse = client.createPet(postRequest);
@@ -135,6 +149,28 @@ public class PetTests {
         assertNotNull(formDataResponse);
         assertEquals(formDataRequest.getName(), formDataResponse.getName());
         assertEquals(formDataRequest.getStatus(), formDataResponse.getStatus());
+    }
+
+    @Test
+    @Tag("Negative")
+    @DisplayName("Проверка изменения несуществующего питомца с помощью формы")
+    @Severity(SeverityLevel.NORMAL)
+    @Feature("Ручка API изменения питомца с помощью формы")
+    @Story("Юзер создает питомца с помощью формы")
+    void updateWithFormDataExpected404Test() {
+        Long fakeId = 9999L;
+
+        Pet formDataRequest = new Pet();
+        formDataRequest.setId(fakeId);
+        formDataRequest.setName("form data name");
+        formDataRequest.setStatus("sold");
+
+        Response formDataResponse = client.updatePetWithFormDataWithStatus404(
+                formDataRequest.getId(),
+                formDataRequest.getName(), formDataRequest.getStatus());
+
+        assertNotNull(formDataResponse);
+        assertEquals("Pet not found", formDataResponse.asString());
     }
 
     @Test
@@ -172,10 +208,11 @@ public class PetTests {
     @Feature("Ручка API добавления питомца")
     @Story("Юзер создает питомца")
     void createPetTestWithStatus400(String brokenJson) {
-        Response response = client.createPetWithBrokenJson(brokenJson);
+        ApiResponse response = client.createPetWithBrokenJson(brokenJson);
 
-        assertEquals("Input error: unable to convert input to io.swagger.petstore.model.Pet",
-                response.jsonPath().getString("message"));
+        assertNotNull(response);
+        assertEquals(400, response.getCode());
+        assertTrue(response.getMessage().contains("Input error: unable to convert input to"));
     }
 
     @Test
@@ -191,6 +228,7 @@ public class PetTests {
         Pet getResponse = client.getPetById(request.getId());
         petId = getResponse.getId();
 
+        assertNotNull(getResponse);
         assertPetFieldsMatch(request, getResponse);
     }
 
@@ -204,7 +242,7 @@ public class PetTests {
     @Severity(SeverityLevel.CRITICAL)
     @Feature("Ручка API выборки питомцев по статусу")
     @Story("Юзер получает питомцев по статусу")
-    void getPetTestWithStatus200(String status) {
+    void getPetByStatusTestWith200(String status) {
         List<Pet> petResponses = client.getPetByStatus(status);
 
         assertFalse(petResponses.isEmpty());
@@ -214,13 +252,47 @@ public class PetTests {
 
     @Test
     @Tag("Negative")
+    @DisplayName("Проверка статуса 400 при невалидном статусе")
+    @Severity(SeverityLevel.NORMAL)
+    @Feature("Ручка API выборки питомцев по статусу")
+    @Story("Юзер получает питомцев по статусу")
+    void getPetByStatusWith404() {
+        ApiResponse petResponse = client.getPetByStatusExpected400("someStatus");
+
+        assertNotNull(petResponse);
+        assertEquals(400, petResponse.getCode());
+        assertTrue(petResponse.getMessage().contains("Input error: query parameter `status value "));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"tag1",
+            "tag2",
+            "tag3"
+    })
+    @Tag("Positive")
+    @DisplayName("Проверка выборки питомцев по тэгу")
+    @Severity(SeverityLevel.CRITICAL)
+    @Feature("Ручка API выборки питомцев по тэгу")
+    @Story("Юзер получает питомцев по тэгу")
+    void getPetByTagWithStatus200(String tag) {
+        List<Pet> petResponse = client.getPetByTags(tag);
+
+        assertFalse(petResponse.isEmpty());
+        assertThat(petResponse)
+                .allMatch(p -> p.getTags().stream()
+                .anyMatch(t -> tag.equals(t.getName())));
+    }
+
+    @Test
+    @Tag("Negative")
     @DisplayName("Проверка статуса 404 при ненахождении питомца")
     @Severity(SeverityLevel.NORMAL)
     @Feature("Ручка API выборки питомца")
     @Story("Юзер получает питомца")
     void getPetTestWithStatus404() {
+        Long fakeId = 9999L;
 
-        Response response = client.getPetExpected404(faker.number().randomNumber());
+        Response response = client.getPetExpected404(fakeId);
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());
         assertEquals("Pet not found", response.asString());
@@ -257,6 +329,29 @@ public class PetTests {
     }
 
     @Test
+    @Tag("Negative")
+    @DisplayName("Проверка изменения несуществующего питомца ")
+    @Severity(SeverityLevel.MINOR)
+    @Feature("Ручка API изменения статуса питомца")
+    @Story("Юзер изменяет статус питомца")
+    void putPetExpected404() {
+        Long id = 9999L;
+
+        Pet putRequest = Pet.builder()
+                .id(id)
+                .name("putPet")
+                .photoUrls(List.of("https://example.com/photo.jpg"))
+                .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
+                .tags(List.of(TagsItem.builder().id(TAG_ID).name("путовый").build()))
+                .status("sold")
+                .build();
+
+        Response putResponse = client.putPetExpected404(putRequest);
+
+        assertEquals("Pet not found", putResponse.asString());
+    }
+
+    @Test
     @Tag("Positive")
     @DisplayName("Проверка удаления питомца")
     @Severity(SeverityLevel.BLOCKER)
@@ -280,7 +375,8 @@ public class PetTests {
     @Feature("Ручка API удаления питомца")
     @Story("Юзер удаляет питомца")
     void deletePetTestWithStatus404() {
-        Response response = client.deletePetExpected404(faker.number().randomNumber());
+        Long fakeId = 9999L;
+        Response response = client.deletePetExpected404(fakeId);
 
         assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());
     }

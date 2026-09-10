@@ -66,8 +66,24 @@ public class PetClient extends ApiBaseClient {
                 .as(Pet.class);
     }
 
+    @Step("Изменение несуществующего питомца с помощью формы")
+    public Response updatePetWithFormDataWithStatus404(Long id, String name, String status) {
+        return RestAssured.given()
+                .spec(RequestSpec.formDataSpec())
+                .pathParam("id", id)
+                .queryParam("name", name)
+                .queryParam("status", status)
+                .when()
+                .post(PET_ENDPOINT + "/{id}")
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .extract()
+                .response();
+    }
+
     @Step("Создание питомца с некорректным JSON (400)")
-    public Response createPetWithBrokenJson(String rawJson) {
+    public ApiResponse createPetWithBrokenJson(String rawJson) {
         return RestAssured.given()
                 .spec(spec)
                 .body(rawJson)
@@ -77,7 +93,7 @@ public class PetClient extends ApiBaseClient {
                 .log().ifError()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .extract()
-                .response();
+                .as(ApiResponse.class);
     }
 
     @Step("Изменение питомца по его id: {id}")
@@ -103,7 +119,7 @@ public class PetClient extends ApiBaseClient {
 
     @Step("Получение питомца по его id: {id}")
     public Pet getPetById(Long id) {
-        return get(PET_ENDPOINT, id)
+        return getWithPathParam(PET_ENDPOINT, id)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
@@ -114,7 +130,7 @@ public class PetClient extends ApiBaseClient {
 
     @Step("Получение питомцев по статусу: {status}")
     public List<Pet> getPetByStatus(String status) {
-        return get(PET_ENDPOINT + "/findByStatus", Map.of("status", status))
+        return getWithQueryParams(PET_ENDPOINT + "/findByStatus", Map.of("status", status))
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
@@ -123,9 +139,20 @@ public class PetClient extends ApiBaseClient {
                 });
     }
 
+    @Step("Получение питомцев по невалидному статусу с ошибкой 400")
+    public ApiResponse getPetByStatusExpected400(String status) {
+        return getWithQueryParams(PET_ENDPOINT + "/findByStatus", Map.of("status", status))
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .extract()
+                .as(new TypeRef<ApiResponse>() {
+                });
+    }
+
     @Step("Получение питомцев по тегу: {tags}")
     public List<Pet> getPetByTags(String tags) {
-        return get(PET_ENDPOINT + "/findByTags", Map.of("tags", tags))
+        return getWithQueryParams(PET_ENDPOINT + "/findByTags", Map.of("tags", tags))
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
@@ -136,7 +163,7 @@ public class PetClient extends ApiBaseClient {
 
     @Step("Получение питомца с ошибкой 404")
     public Response getPetExpected404(Long id) {
-        return get(PET_ENDPOINT, id)
+        return getWithPathParam(PET_ENDPOINT, id)
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_NOT_FOUND)
