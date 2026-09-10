@@ -371,7 +371,7 @@ public class PetTests {
     @Test
     @Tag("Negative")
     @DisplayName("Проверка удаления питомца с несуществующим id")
-    @Severity(SeverityLevel.NORMAL)
+    @Severity(SeverityLevel.CRITICAL)
     @Feature("Ручка API удаления питомца")
     @Story("Юзер удаляет питомца")
     void deletePetTestWithStatus404() {

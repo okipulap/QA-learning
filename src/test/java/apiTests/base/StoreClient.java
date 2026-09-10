@@ -4,6 +4,7 @@ import apiTests.models.store.InventoryResponse;
 import apiTests.models.store.Order;
 import apiTests.specs.RequestSpec;
 import io.qameta.allure.Step;
+import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -49,7 +50,7 @@ public class StoreClient extends ApiBaseClient {
                 .as(Order.class);
     }
 
-    @Step("Поиск заказа по его id: {id}")
+    @Step("Поиск заказа по несуществующему id")
     public Response getOrderExpected404(Long id) {
         return getWithPathParam(STORE_ENDPOINT, id)
                 .then()
@@ -65,6 +66,20 @@ public class StoreClient extends ApiBaseClient {
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
+                .extract()
+                .response();
+    }
+
+    @Step("Удаление питомца с несуществующим id")
+    public Response deleteOrderExpected404(Long id) {
+        return RestAssured.given()
+                .spec(RequestSpec.publicSpec())
+                .pathParam("id", id)
+                .when()
+                .delete(STORE_ENDPOINT + "/{id}")
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.SC_NOT_FOUND)
                 .extract()
                 .response();
     }

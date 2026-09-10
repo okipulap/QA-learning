@@ -26,6 +26,7 @@ public class StoreTests {
     private Long storeId;
 
     private static final Faker faker = new Faker();
+
     private static final Long ORDER_ID = faker.number().randomNumber();
     private static final Long PET_ID = faker.number().randomNumber();
     private static final int QUANTITY = faker.number().randomDigitNotZero();
@@ -120,7 +121,9 @@ public class StoreTests {
     @Feature("Ручка API выборки заказа")
     @Story("Юзер получает заказ")
     void getOrderTestWithStatus404() {
-        Response response = client.getOrderExpected404(faker.number().randomNumber());
+        Long fakeId = 9999L;
+
+        Response response = client.getOrderExpected404(fakeId);
 
         assertEquals("Order not found", response.asString());
     }
@@ -138,6 +141,20 @@ public class StoreTests {
         Response delResponse = client.deleteOrder(postResponse.getId());
 
         assertEquals(HttpStatus.SC_OK, delResponse.getStatusCode());
+    }
+
+    @Test
+    @Tag("Negative")
+    @DisplayName("Удаление несуществующего заказа")
+    @Severity(SeverityLevel.CRITICAL)
+    @Feature("Ручка API Удаление заказа")
+    @Story("Юзер удаляет заказ")
+    void deleteOrderExpected404() {
+        Long fakeid = 9999L;
+
+        Response delResponse = client.deleteOrderExpected404(fakeid);
+
+        assertEquals(HttpStatus.SC_NOT_FOUND, delResponse.getStatusCode());
     }
 
     @AfterEach
