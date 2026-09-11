@@ -310,7 +310,6 @@ public class PetTests {
         Pet postRequest = createDefaultPetRequest();
 
         Pet createResponse = client.createPet(postRequest);
-        petId = createResponse.getId();
 
         Pet putRequest = Pet.builder()
                 .id(postRequest.getId())
@@ -323,6 +322,8 @@ public class PetTests {
 
         Pet putResponse = client.putPet(putRequest);
         Pet getResponse = client.getPetById(putRequest.getId());
+
+        petId = createResponse.getId();
 
         assertPetFieldsMatch(putRequest, putResponse);
         assertPetFieldsMatch(putRequest, getResponse);

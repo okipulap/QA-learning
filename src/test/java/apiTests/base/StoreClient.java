@@ -70,7 +70,7 @@ public class StoreClient extends ApiBaseClient {
                 .response();
     }
 
-    @Step("Удаление питомца с несуществующим id")
+    @Step("Удаление заказа с несуществующим id")
     public Response deleteOrderExpected404(Long id) {
         return RestAssured.given()
                 .spec(RequestSpec.publicSpec())

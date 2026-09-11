@@ -150,9 +150,9 @@ public class StoreTests {
     @Feature("Ручка API Удаление заказа")
     @Story("Юзер удаляет заказ")
     void deleteOrderExpected404() {
-        Long fakeid = 9999L;
+        Long fakeId = 9999L;
 
-        Response delResponse = client.deleteOrderExpected404(fakeid);
+        Response delResponse = client.deleteOrderExpected404(fakeId);
 
         assertEquals(HttpStatus.SC_NOT_FOUND, delResponse.getStatusCode());
     }
