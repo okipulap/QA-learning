@@ -49,6 +49,14 @@ public class RequestSpec {
                 .setContentType(ContentType.MULTIPART));
     }
 
+    public static RequestSpecification xmlSpec() {
+        return baseSpec(new RequestSpecBuilder()
+                .setBaseUri(BASE_PUBLIC_URI)
+                .setBasePath(BASE_PUBLIC_PATH)
+                .setContentType(ContentType.JSON)
+                .setAccept(ContentType.XML));
+    }
+
     private static RequestSpecification baseSpec(RequestSpecBuilder builder) {
         return builder
                 .setAccept(ContentType.JSON)

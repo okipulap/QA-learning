@@ -25,12 +25,26 @@ dependencies {
     testImplementation("io.qameta.allure:allure-rest-assured")
     testImplementation("io.qameta.allure:allure-junit5")
 
-    //API-test
+    //REST-Assured
     testImplementation("io.rest-assured:rest-assured:6.0.0")
+
+    //jackson
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
+
+    //dotenv
     implementation("io.github.cdimascio:dotenv-java:3.2.0")
+
+    //json-schema-validator
     testImplementation("io.rest-assured:json-schema-validator:6.0.0")
+
+    //javaFaker
     testImplementation("com.github.javafaker:javafaker:1.0.2")
+
+    // JAXB API
+    testImplementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
+
+    // JAXB Runtime (реализация)
+    testRuntimeOnly("org.glassfish.jaxb:jaxb-runtime:4.0.5")
 
     //JUnit5
     testImplementation(platform("org.junit:junit-bom:5.10.3"))

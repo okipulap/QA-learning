@@ -314,9 +314,9 @@ public class PetTests {
         Pet putRequest = Pet.builder()
                 .id(postRequest.getId())
                 .name("putPet")
-                .photoUrls(List.of("https://example.com/photo.jpg"))
-                .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
-                .tags(List.of(TagsItem.builder().id(TAG_ID).name("путовый").build()))
+                .photoUrls(postRequest.getPhotoUrls())
+                .category(postRequest.getCategory())
+                .tags(postRequest.getTags())
                 .status(status)
                 .build();
 

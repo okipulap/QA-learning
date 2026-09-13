@@ -110,36 +110,36 @@ public class UserTests {
         assertEquals("User not found", getResponse.asString());
     }
 
-//    @Test
-//    @Tag("Positive")
-//    @DisplayName("Изменение юзера")
-//    @Severity(SeverityLevel.BLOCKER)
-//    @Feature("Ручка API изменения юзера")
-//    @Story("Юзер изменяет юзера")
-//    void putUserWithStatus200() {
-//        User postRequest = createDefaultUserRequest();
-//        User postResponse = client.postUser(postRequest);
-//
-//        User putRequest = User.builder()
-//                .id(123L)
-//                .username(postResponse.getUsername())
-//                .firstName("test first name")
-//                .lastName("test last name")
-//                .email("test@gmail.com")
-//                .password("testPass")
-//                .phone("+79999999999")
-//                .userStatus(2)
-//                .build();
-//
-//        User putResponse = client.putUserByUsername(postRequest.getUsername());
-//        User getResponse = client.getUserByUsername(putRequest.getUsername());
-//
-//        userName = getResponse.getUsername();
-//
-//        assertNotNull(putResponse);
-//        assertUserFieldsMatch(putRequest, putResponse);
-//        assertUserFieldsMatch(putRequest, getResponse);
-//    }
+    @Test
+    @Tag("Positive")
+    @DisplayName("Изменение юзера по его username")
+    @Severity(SeverityLevel.BLOCKER)
+    @Feature("Ручка API изменения юзера")
+    @Story("Юзер изменяет юзера")
+    void putUserWithStatus200() {
+        User postRequest = createDefaultUserRequest();
+        client.postUser(postRequest);
+
+        User putRequest = User.builder()
+                .id(postRequest.getId())
+                .username(postRequest.getUsername())
+                .firstName("Test")
+                .lastName("Testovich")
+                .email("test@email.com")
+                .password("testPass")
+                .phone("+79999999999")
+                .userStatus(5)
+                .build();
+        User putResponse = client.putUserByUsername(putRequest, postRequest.getUsername());
+
+        User getResponse = client.getUserByUsername(putResponse.getUsername());
+
+        userName = putResponse.getUsername();
+
+        assertNotNull(putResponse);
+        assertUserFieldsMatch(putRequest, putResponse);
+        assertUserFieldsMatch(putRequest, getResponse);
+    }
 
     @Test
     @Tag("Positive")

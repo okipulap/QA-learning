@@ -1,7 +1,9 @@
 package apiTests.base;
 
 import apiTests.models.user.User;
+import apiTests.models.user.Users;
 import apiTests.specs.RequestSpec;
+import apiTests.utils.XmlUtils;
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -25,6 +27,18 @@ public class UserClient extends ApiBaseClient{
                 .body(matchesJsonSchemaInClasspath("schemas/user-response-schema.json"))
                 .extract()
                 .as(User.class);
+    }
+
+    @Step("Создание юзера с помощью массива")
+    public Users postUserWithArray(User[] users) {
+        String xml = post(USER_ENDPOINT + "/createWithList", users)
+                .then()
+                .log().ifError()
+                .statusCode(HttpStatus.SC_OK)
+                .extract()
+                .asString();
+
+        return XmlUtils.fromXml(xml, Users.class);
     }
 
     @Step("Получение юзера по его username: {username}")
@@ -57,18 +71,36 @@ public class UserClient extends ApiBaseClient{
     }
 
     @Step("Изменение юзера по его username: {username}")
-    public User putUserByUsername(String username) {
+    public User putUserByUsername(User request, String username) {
         return RestAssured.given()
                 .spec(spec)
                 .pathParam("username", username)
+                .body(request)
                 .when()
                 .put(USER_ENDPOINT + "/{username}")
                 .then()
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
+                .body(matchesJsonSchemaInClasspath("schemas/user-response-schema.json"))
                 .extract()
                 .as(User.class);
     }
+
+//    @Step("Изменение юзера по несуществующему username")
+//    public User putUserByUsernameExpected404(User request, String username) {
+//        return RestAssured.given()
+//                .spec(spec)
+//                .pathParam("username", username)
+//                .body(request)
+//                .when()
+//                .put(USER_ENDPOINT + "/{username}")
+//                .then()
+//                .log().ifError()
+//                .statusCode(HttpStatus.SC_OK)
+//                .body(matchesJsonSchemaInClasspath("schemas/user-response-schema.json"))
+//                .extract()
+//                .as(User.class);
+//    }
 
     @Step("Удаление юзера по username: {username}")
     public Response deleteUser(String username) {
