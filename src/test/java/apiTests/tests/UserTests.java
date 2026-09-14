@@ -8,43 +8,38 @@ import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
-import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @Epic("PetStore API: магазин")
 @Owner("Nikita Tkachenko")
 public class UserTests {
 
     private static UserClient client;
-    private String userName;
+    private final List<String> createdUsernames = new ArrayList<>();
 
     private static final Faker faker = new Faker();
-
-    private static final Long USER_ID = faker.number().randomNumber();
-    private static final String USER_NAME = faker.funnyName().name();
-    private static final String FIRST_NAME = faker.name().firstName();
-    private static final String LAST_NAME = faker.name().lastName();
-    private static final String USER_EMAIL = faker.internet().emailAddress();
-    private static final String USER_PASS = faker.internet().password();
-    private static final String USER_PHONE = faker.phoneNumber().phoneNumber();
-    private static final int USER_STATUS = 1;
 
     @BeforeAll
     public static void setUp() {
         client = new UserClient();
     }
 
-    private User createDefaultUserRequest() {
+    private User buildRandomUser() {
         return User.builder()
-                .id(USER_ID)
-                .username(USER_NAME)
-                .firstName(FIRST_NAME)
-                .lastName(LAST_NAME)
-                .email(USER_EMAIL)
-                .password(USER_PASS)
-                .phone(USER_PHONE)
-                .userStatus(USER_STATUS)
+                .id(faker.number().randomNumber())
+                .username(faker.funnyName().name() + faker.number().digits(4))
+                .firstName(faker.name().firstName())
+                .lastName(faker.name().lastName())
+                .email(faker.internet().emailAddress())
+                .password(faker.internet().password())
+                .phone(faker.phoneNumber().phoneNumber())
+                .userStatus(1)
                 .build();
+
     }
 
     private void assertUserFieldsMatch(User request, User response) {
@@ -68,11 +63,11 @@ public class UserTests {
     @Feature("Ручка API создания юзера")
     @Story("Юзер создает юзера")
     void postUserWithStatus200() {
-        User request = createDefaultUserRequest();
+        User request = buildRandomUser();
 
         User response = client.postUser(request);
 
-        userName = response.getUsername();
+        createdUsernames.add(response.getUsername());
 
         assertUserFieldsMatch(request, response);
     }
@@ -84,21 +79,50 @@ public class UserTests {
     @Feature("Ручка API создания юзера")
     @Story("Юзер получает юзера")
     void getUserWithStatus200() {
-        User request = createDefaultUserRequest();
+        User request = buildRandomUser();
 
         User response = client.postUser(request);
         User getResponse = client.getUserByUsername(response.getUsername());
 
-        userName = response.getUsername();
+        createdUsernames.add(getResponse.getUsername());
 
         assertNotNull(getResponse);
         assertUserFieldsMatch(request, getResponse);
     }
 
     @Test
+    @Tag("Positive")
+    @DisplayName("Создание списка юзеров")
+    @Severity(SeverityLevel.BLOCKER)
+    @Feature("Ручка API создания списка юзеров")
+    @Story("Юзер создает список юзеров")
+    void postUserWithListStatus200() {
+        User firstUser = buildRandomUser();
+        User secondUser = buildRandomUser();
+        List<User> request = List.of(firstUser, secondUser);
+        createdUsernames.add(firstUser.getUsername());
+        createdUsernames.add(secondUser.getUsername());
+
+        List<User> response = client.postUsersWithList(request);
+
+        assertNotNull(response);
+        assertEquals(2, response.size());
+
+        User getFirst = client.getUserByUsername(firstUser.getUsername());
+        User getSecond = client.getUserByUsername(secondUser.getUsername());
+
+        assertEquals(firstUser.getUsername(), getFirst.getUsername());
+        assertEquals(firstUser.getEmail(), getFirst.getEmail());
+
+        assertEquals(secondUser.getUsername(), getSecond.getUsername());
+        assertEquals(secondUser.getEmail(), getSecond.getEmail());
+
+    }
+
+    @Test
     @Tag("Negative")
     @DisplayName("Получение юзера по несуществующему username")
-    @Severity(SeverityLevel.BLOCKER)
+    @Severity(SeverityLevel.CRITICAL)
     @Feature("Ручка API создания юзера")
     @Story("Юзер получает юзера")
     void getUserExpected404() {
@@ -117,7 +141,7 @@ public class UserTests {
     @Feature("Ручка API изменения юзера")
     @Story("Юзер изменяет юзера")
     void putUserWithStatus200() {
-        User postRequest = createDefaultUserRequest();
+        User postRequest = buildRandomUser();
         client.postUser(postRequest);
 
         User putRequest = User.builder()
@@ -134,12 +158,38 @@ public class UserTests {
 
         User getResponse = client.getUserByUsername(putResponse.getUsername());
 
-        userName = putResponse.getUsername();
+        createdUsernames.add(putResponse.getUsername());
 
         assertNotNull(putResponse);
         assertUserFieldsMatch(putRequest, putResponse);
         assertUserFieldsMatch(putRequest, getResponse);
     }
+
+    @Test
+    @Tag("Negative")
+    @DisplayName("Изменение юзера по несуществующему username")
+    @Severity(SeverityLevel.CRITICAL)
+    @Feature("Ручка API изменения юзера")
+    @Story("Юзер изменяет несуществующего юзера")
+    void putUserExpected404() {
+        String fakeUsername = "tesUsername1234";
+
+        User putRequest = User.builder()
+                .id(1L)
+                .username(fakeUsername)
+                .firstName("Test")
+                .lastName("Testovich")
+                .email("test@email.com")
+                .password("testPass")
+                .phone("+79999999999")
+                .userStatus(5)
+                .build();
+
+        Response putResponse = client.putUserByUsernameExpected404(putRequest, fakeUsername);
+
+        assertEquals("User not found", putResponse.asString());
+    }
+
 
     @Test
     @Tag("Positive")
@@ -148,7 +198,7 @@ public class UserTests {
     @Feature("Ручка API удаления юзера")
     @Story("Юзер удаляет юзера")
     void deleteUserWithStatus200() {
-        User postRequest = createDefaultUserRequest();
+        User postRequest = buildRandomUser();
 
         User postResponse = client.postUser(postRequest);
 
@@ -160,7 +210,7 @@ public class UserTests {
     @Test
     @Tag("Negative")
     @DisplayName("Тест удаления юзера с несуществующим username")
-    @Severity(SeverityLevel.BLOCKER)
+    @Severity(SeverityLevel.CRITICAL)
     @Feature("Ручка API удаления юзера")
     @Story("Юзер удаляет юзера")
     void deleteUserExpected404() {
@@ -173,8 +223,9 @@ public class UserTests {
 
     @AfterEach
     void cleanUp() {
-        if (userName != null) {
-            client.deleteUser(userName);
+        for (String username : createdUsernames) {
+            client.deleteUser(username);
         }
+        createdUsernames.clear();
     }
 }

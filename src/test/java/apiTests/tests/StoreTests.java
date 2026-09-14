@@ -1,8 +1,6 @@
 package apiTests.tests;
 
 import apiTests.base.StoreClient;
-import apiTests.models.pet.Pet;
-import apiTests.models.store.InventoryResponse;
 import apiTests.models.store.Order;
 import com.github.javafaker.Faker;
 import io.qameta.allure.*;
@@ -27,28 +25,21 @@ public class StoreTests {
 
     private static final Faker faker = new Faker();
 
-    private static final Long ORDER_ID = faker.number().randomNumber();
-    private static final Long PET_ID = faker.number().randomNumber();
-    private static final int QUANTITY = faker.number().randomDigitNotZero();
-    private static final String SHIP_DATE = OffsetDateTime
-            .now(ZoneOffset.UTC)
-            .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-    private static final String STATUS_APPROVED = "approved";
-    private static final boolean COMPLETE_TRUE = true;
-
     @BeforeAll
     public static void setUp() {
         client = new StoreClient();
     }
 
-    private Order createDefaultOrderRequest() {
+    private Order buildRandomOrder() {
         return Order.builder()
-                .id(ORDER_ID)
-                .petId(PET_ID)
-                .quantity(QUANTITY)
-                .shipDate(SHIP_DATE)
-                .status(STATUS_APPROVED)
-                .complete(COMPLETE_TRUE)
+                .id(faker.number().randomNumber())
+                .petId(faker.number().randomNumber())
+                .quantity(faker.number().randomDigitNotZero())
+                .shipDate(OffsetDateTime
+                        .now(ZoneOffset.UTC)
+                        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                .status("approved")
+                .complete(true)
                 .build();
     }
 
@@ -76,7 +67,7 @@ public class StoreTests {
     void getInventoryTestWithStatus200() {
         int approvedBefore = client.getInventory().getApproved();
 
-        client.postOrder(createDefaultOrderRequest());
+        client.postOrder(buildRandomOrder());
 
         int approvedAfter = client.getInventory().getApproved();
 
@@ -90,7 +81,7 @@ public class StoreTests {
     @Feature("Ручка API создания заказа")
     @Story("Юзер создает заказ")
     void postOrderWithStatus200() {
-        Order request = createDefaultOrderRequest();
+        Order request = buildRandomOrder();
 
         Order response = client.postOrder(request);
         storeId = response.getId();
@@ -105,7 +96,7 @@ public class StoreTests {
     @Feature("Ручка API Получения заказа")
     @Story("Юзер получает заказ")
     void getOrderWithStatus200() {
-        Order postRequest = createDefaultOrderRequest();
+        Order postRequest = buildRandomOrder();
         Order postResponse = client.postOrder(postRequest);
 
         Order getResponse = client.getOrderById(postResponse.getId());
@@ -135,7 +126,7 @@ public class StoreTests {
     @Feature("Ручка API Удаление заказа")
     @Story("Юзер удаляет заказ")
     void deleteOrderWithStatus200() {
-        Order postRequest = createDefaultOrderRequest();
+        Order postRequest = buildRandomOrder();
         Order postResponse = client.postOrder(postRequest);
 
         Response delResponse = client.deleteOrder(postResponse.getId());

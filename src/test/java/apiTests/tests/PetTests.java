@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 @Epic("PetStore API: питомцы")

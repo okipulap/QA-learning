@@ -22,6 +22,7 @@ public class RequestSpec {
         return baseSpec(new RequestSpecBuilder()
                 .setBaseUri(BASE_URI)
                 .setBasePath(BASE_PATH)
+                .setAccept(ContentType.JSON)
                 .setContentType(ContentType.JSON));
     }
 
@@ -30,6 +31,7 @@ public class RequestSpec {
         return baseSpec(new RequestSpecBuilder()
                 .setBaseUri(BASE_PUBLIC_URI)
                 .setBasePath(BASE_PUBLIC_PATH)
+                .setAccept(ContentType.JSON)
                 .setContentType(ContentType.JSON));
     }
 
@@ -38,6 +40,7 @@ public class RequestSpec {
         return baseSpec(new RequestSpecBuilder()
                 .setBaseUri(BASE_URI)
                 .setBasePath(BASE_PATH)
+                .setAccept(ContentType.JSON)
                 .setContentType(ContentType.URLENC));
     }
 
@@ -46,20 +49,20 @@ public class RequestSpec {
         return baseSpec(new RequestSpecBuilder()
                 .setBaseUri(BASE_PUBLIC_URI)
                 .setBasePath(BASE_PUBLIC_PATH)
+                .setAccept(ContentType.JSON)
                 .setContentType(ContentType.MULTIPART));
     }
 
     public static RequestSpecification xmlSpec() {
         return baseSpec(new RequestSpecBuilder()
-                .setBaseUri(BASE_PUBLIC_URI)
-                .setBasePath(BASE_PUBLIC_PATH)
+                .setBaseUri(BASE_URI)
+                .setBasePath(BASE_PATH)
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.XML));
     }
 
     private static RequestSpecification baseSpec(RequestSpecBuilder builder) {
         return builder
-                .setAccept(ContentType.JSON)
                 .addHeader("api_key", API_KEY)
                 .addFilter(new AllureRestAssured())
                 .build();
