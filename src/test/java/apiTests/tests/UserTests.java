@@ -1,8 +1,8 @@
 package apiTests.tests;
 
 import apiTests.base.UserClient;
+import apiTests.factories.UserFactory;
 import apiTests.models.user.User;
-import com.github.javafaker.Faker;
 import io.qameta.allure.*;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
@@ -21,25 +21,9 @@ public class UserTests {
     private static UserClient client;
     private final List<String> createdUsernames = new ArrayList<>();
 
-    private static final Faker faker = new Faker();
-
     @BeforeAll
     public static void setUp() {
         client = new UserClient();
-    }
-
-    private User buildRandomUser() {
-        return User.builder()
-                .id(faker.number().randomNumber())
-                .username(faker.funnyName().name() + faker.number().digits(4))
-                .firstName(faker.name().firstName())
-                .lastName(faker.name().lastName())
-                .email(faker.internet().emailAddress())
-                .password(faker.internet().password())
-                .phone(faker.phoneNumber().phoneNumber())
-                .userStatus(1)
-                .build();
-
     }
 
     private void assertUserFieldsMatch(User request, User response) {
@@ -63,7 +47,7 @@ public class UserTests {
     @Feature("Ручка API создания юзера")
     @Story("Юзер создает юзера")
     void postUserWithStatus200() {
-        User request = buildRandomUser();
+        User request = UserFactory.randomUser();
 
         User response = client.postUser(request);
 
@@ -79,7 +63,7 @@ public class UserTests {
     @Feature("Ручка API создания юзера")
     @Story("Юзер получает юзера")
     void getUserWithStatus200() {
-        User request = buildRandomUser();
+        User request = UserFactory.randomUser();
 
         User response = client.postUser(request);
         User getResponse = client.getUserByUsername(response.getUsername());
@@ -97,25 +81,23 @@ public class UserTests {
     @Feature("Ручка API создания списка юзеров")
     @Story("Юзер создает список юзеров")
     void postUserWithListStatus200() {
-        User firstUser = buildRandomUser();
-        User secondUser = buildRandomUser();
-        List<User> request = List.of(firstUser, secondUser);
-        createdUsernames.add(firstUser.getUsername());
-        createdUsernames.add(secondUser.getUsername());
+        List<User> request = UserFactory.listOfUsers(2);
+        createdUsernames.add(request.get(0).getUsername());
+        createdUsernames.add(request.get(1).getUsername());
 
         List<User> response = client.postUsersWithList(request);
 
         assertNotNull(response);
         assertEquals(2, response.size());
 
-        User getFirst = client.getUserByUsername(firstUser.getUsername());
-        User getSecond = client.getUserByUsername(secondUser.getUsername());
+        User getFirst = client.getUserByUsername(request.get(0).getUsername());
+        User getSecond = client.getUserByUsername(request.get(1).getUsername());
 
-        assertEquals(firstUser.getUsername(), getFirst.getUsername());
-        assertEquals(firstUser.getEmail(), getFirst.getEmail());
+        assertEquals(request.get(0).getUsername(), getFirst.getUsername());
+        assertEquals(request.get(0).getEmail(), getFirst.getEmail());
 
-        assertEquals(secondUser.getUsername(), getSecond.getUsername());
-        assertEquals(secondUser.getEmail(), getSecond.getEmail());
+        assertEquals(request.get(1).getUsername(), getSecond.getUsername());
+        assertEquals(request.get(1).getEmail(), getSecond.getEmail());
 
     }
 
@@ -141,19 +123,10 @@ public class UserTests {
     @Feature("Ручка API изменения юзера")
     @Story("Юзер изменяет юзера")
     void putUserWithStatus200() {
-        User postRequest = buildRandomUser();
+        User postRequest = UserFactory.randomUser();
         client.postUser(postRequest);
 
-        User putRequest = User.builder()
-                .id(postRequest.getId())
-                .username(postRequest.getUsername())
-                .firstName("Test")
-                .lastName("Testovich")
-                .email("test@email.com")
-                .password("testPass")
-                .phone("+79999999999")
-                .userStatus(5)
-                .build();
+        User putRequest = UserFactory.updateUser(postRequest.getId(), postRequest.getUsername());
         User putResponse = client.putUserByUsername(putRequest, postRequest.getUsername());
 
         User getResponse = client.getUserByUsername(putResponse.getUsername());
@@ -174,16 +147,7 @@ public class UserTests {
     void putUserExpected404() {
         String fakeUsername = "tesUsername1234";
 
-        User putRequest = User.builder()
-                .id(1L)
-                .username(fakeUsername)
-                .firstName("Test")
-                .lastName("Testovich")
-                .email("test@email.com")
-                .password("testPass")
-                .phone("+79999999999")
-                .userStatus(5)
-                .build();
+        User putRequest = UserFactory.updateUser(1L, fakeUsername);
 
         Response putResponse = client.putUserByUsernameExpected404(putRequest, fakeUsername);
 
@@ -198,7 +162,7 @@ public class UserTests {
     @Feature("Ручка API удаления юзера")
     @Story("Юзер удаляет юзера")
     void deleteUserWithStatus200() {
-        User postRequest = buildRandomUser();
+        User postRequest = UserFactory.randomUser();
 
         User postResponse = client.postUser(postRequest);
 
@@ -216,7 +180,7 @@ public class UserTests {
     void deleteUserExpected404() {
         String fakeUserName = "testUserName";
 
-        Response delResponse = client.deleteOrderExpected404(fakeUserName);
+        Response delResponse = client.deleteUserExpected404(fakeUserName);
 
         assertEquals(HttpStatus.SC_NOT_FOUND, delResponse.getStatusCode());
     }

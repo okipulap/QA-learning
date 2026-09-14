@@ -1,8 +1,8 @@
 package apiTests.tests;
 
 import apiTests.base.StoreClient;
+import apiTests.factories.OrderFactory;
 import apiTests.models.store.Order;
-import com.github.javafaker.Faker;
 import io.qameta.allure.*;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
@@ -10,8 +10,6 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,24 +21,9 @@ public class StoreTests {
     private static StoreClient client;
     private Long storeId;
 
-    private static final Faker faker = new Faker();
-
     @BeforeAll
     public static void setUp() {
         client = new StoreClient();
-    }
-
-    private Order buildRandomOrder() {
-        return Order.builder()
-                .id(faker.number().randomNumber())
-                .petId(faker.number().randomNumber())
-                .quantity(faker.number().randomDigitNotZero())
-                .shipDate(OffsetDateTime
-                        .now(ZoneOffset.UTC)
-                        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                .status("approved")
-                .complete(true)
-                .build();
     }
 
     private void assertOrderFieldsMatch(Order request, Order response) {
@@ -67,7 +50,7 @@ public class StoreTests {
     void getInventoryTestWithStatus200() {
         int approvedBefore = client.getInventory().getApproved();
 
-        client.postOrder(buildRandomOrder());
+        client.postOrder(OrderFactory.randomOrder());
 
         int approvedAfter = client.getInventory().getApproved();
 
@@ -81,7 +64,7 @@ public class StoreTests {
     @Feature("Ручка API создания заказа")
     @Story("Юзер создает заказ")
     void postOrderWithStatus200() {
-        Order request = buildRandomOrder();
+        Order request = OrderFactory.randomOrder();
 
         Order response = client.postOrder(request);
         storeId = response.getId();
@@ -96,7 +79,7 @@ public class StoreTests {
     @Feature("Ручка API Получения заказа")
     @Story("Юзер получает заказ")
     void getOrderWithStatus200() {
-        Order postRequest = buildRandomOrder();
+        Order postRequest = OrderFactory.randomOrder();
         Order postResponse = client.postOrder(postRequest);
 
         Order getResponse = client.getOrderById(postResponse.getId());
@@ -126,7 +109,7 @@ public class StoreTests {
     @Feature("Ручка API Удаление заказа")
     @Story("Юзер удаляет заказ")
     void deleteOrderWithStatus200() {
-        Order postRequest = buildRandomOrder();
+        Order postRequest = OrderFactory.randomOrder();
         Order postResponse = client.postOrder(postRequest);
 
         Response delResponse = client.deleteOrder(postResponse.getId());

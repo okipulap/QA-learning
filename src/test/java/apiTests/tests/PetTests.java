@@ -1,11 +1,9 @@
 package apiTests.tests;
 
 import apiTests.base.PetClient;
+import apiTests.factories.PetFactory;
 import apiTests.models.*;
-import apiTests.models.pet.Category;
 import apiTests.models.pet.Pet;
-import apiTests.models.pet.TagsItem;
-import com.github.javafaker.Faker;
 import io.qameta.allure.*;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
@@ -27,34 +25,10 @@ import java.util.stream.Stream;
 public class PetTests {
     private static PetClient client;
     private Long petId;
-    private static final Faker faker = new Faker();
-
-    private static final Long PET_ID = faker.number().randomNumber();
-    private static final String PET_NAME = faker.animal().name();
-    private static final String STATUS_AVAILABLE = "available";
-    private static final Long CATEGORY_ID = 1L;
-    private static final String CATEGORY_NAME = faker.dog().gender();
-    private static final Long TAG_ID = 1L;
-    private static final String TAG_NAME = faker.dog().breed();
 
     @BeforeAll
     public static void setUp() {
         client = new PetClient();
-    }
-
-    private Pet createDefaultPetRequest() {
-        return createPetRequestWithStatus(STATUS_AVAILABLE);
-    }
-
-    private Pet createPetRequestWithStatus(String status) {
-        return Pet.builder()
-                .id(PET_ID)
-                .name(PET_NAME)
-                .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
-                .tags(List.of(TagsItem.builder().id(TAG_ID).name(TAG_NAME).build()))
-                .photoUrls(List.of("https://example.com/photo.jpg"))
-                .status(status)
-                .build();
     }
 
     private void assertPetFieldsMatch(Pet request, Pet response) {
@@ -116,7 +90,7 @@ public class PetTests {
     @Feature("Ручка API добавления питомца")
     @Story("Юзер создает питомца")
     void createPetTest() {
-        Pet request = createDefaultPetRequest();
+        Pet request = PetFactory.createPet("available");
 
         Pet response = client.createPet(request);
         petId = response.getId();
@@ -131,7 +105,7 @@ public class PetTests {
     @Feature("Ручка API изменения питомца с помощью формы")
     @Story("Юзер создает изменения с помощью формы")
     void updateWithFormDataTest() {
-        Pet postRequest = createDefaultPetRequest();
+        Pet postRequest = PetFactory.createPet("available");
         Pet postResponse = client.createPet(postRequest);
 
         petId = postResponse.getId();
@@ -184,7 +158,7 @@ public class PetTests {
     расхождение с ожидаемым поведением.
     """)
     void uploadPetImageTestWithStatus200() throws Exception {
-        Pet request = createDefaultPetRequest();
+        Pet request = PetFactory.createPet("available");
         Pet response = client.createPet(request);
 
         File image = new File(getClass().getResource("/pet.jpg").toURI());
@@ -221,7 +195,7 @@ public class PetTests {
     @Feature("Ручка API выборки питомца")
     @Story("Юзер получает питомца")
     void getPetTestWithStatusCode200() {
-        Pet request = createDefaultPetRequest();
+        Pet request = PetFactory.createPet("available");
 
         client.createPet(request);
         Pet getResponse = client.getPetById(request.getId());
@@ -306,18 +280,13 @@ public class PetTests {
     @Feature("Ручка API изменения статуса питомца")
     @Story("Юзер изменяет статус питомца")
     void putPetTestWithStatus200(String status) {
-        Pet postRequest = createDefaultPetRequest();
+        Pet postRequest = PetFactory.createPet("available");
 
         Pet createResponse = client.createPet(postRequest);
 
-        Pet putRequest = Pet.builder()
-                .id(postRequest.getId())
-                .name("putPet")
-                .photoUrls(postRequest.getPhotoUrls())
-                .category(postRequest.getCategory())
-                .tags(postRequest.getTags())
-                .status(status)
-                .build();
+        Pet putRequest = PetFactory.updatePetFromExisting(
+                postRequest.getId(), "putPet", status,
+                postRequest.getPhotoUrls(), postRequest.getCategory(), postRequest.getTags());
 
         Pet putResponse = client.putPet(putRequest);
         Pet getResponse = client.getPetById(putRequest.getId());
@@ -337,14 +306,7 @@ public class PetTests {
     void putPetExpected404() {
         Long id = 9999L;
 
-        Pet putRequest = Pet.builder()
-                .id(id)
-                .name("putPet")
-                .photoUrls(List.of("https://example.com/photo.jpg"))
-                .category(Category.builder().id(CATEGORY_ID).name(CATEGORY_NAME).build())
-                .tags(List.of(TagsItem.builder().id(TAG_ID).name("путовый").build()))
-                .status("sold")
-                .build();
+        Pet putRequest = PetFactory.updatePet(id, "putPet", "sold");
 
         Response putResponse = client.putPetExpected404(putRequest);
 
@@ -358,7 +320,7 @@ public class PetTests {
     @Feature("Ручка API удаления питомца")
     @Story("Юзер удаляет питомца")
     void deletePetTestWithStatus200() {
-        Pet postRequest = createDefaultPetRequest();
+        Pet postRequest = PetFactory.createPet("available");
 
         client.createPet(postRequest);
 

@@ -116,7 +116,7 @@ public class UserClient extends ApiBaseClient{
     }
 
     @Step("Удаление заказа с несуществующим username")
-    public Response deleteOrderExpected404(String username) {
+    public Response deleteUserExpected404(String username) {
         return RestAssured.given()
                 .spec(RequestSpec.publicSpec())
                 .pathParam("username", username)
