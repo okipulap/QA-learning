@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Epic("PetStore API: магазин")
+@Epic("PetStore API: пользователи")
 @Owner("Nikita Tkachenko")
 public class UserTests {
 

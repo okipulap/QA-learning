@@ -1,6 +1,6 @@
 package apiTests.specs;
 
-import io.github.cdimascio.dotenv.Dotenv;
+import apiTests.config.Config;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
@@ -8,14 +8,17 @@ import io.restassured.specification.RequestSpecification;
 import io.qameta.allure.*;
 
 public class RequestSpec {
+    private static final String API_KEY = Config.get("PETSTORE_API_KEY", "");
 
-    private static final Dotenv DOTENV = Dotenv.load();
+    private static final String BASE_URI =
+            Config.get("PETSTORE_BASE_URI", "http://localhost:8080/api/");
+    private static final String BASE_PATH =
+            Config.get("PETSTORE_BASE_PATH", "v3/");
 
-    private static final String API_KEY = DOTENV.get("PETSTORE_API_KEY");
-    private static final String BASE_URI = DOTENV.get("PETSTORE_BASE_URI");
-    private static final String BASE_PATH = DOTENV.get("PETSTORE_BASE_PATH");
-    private static final String BASE_PUBLIC_URI = DOTENV.get("PETSTORE_BASE_PUBLIC_URI");
-    private static final String BASE_PUBLIC_PATH = DOTENV.get("PETSTORE_BASE_PUBLIC_PATH");
+    private static final String BASE_PUBLIC_URI =
+            Config.get("PETSTORE_BASE_PUBLIC_URI", "https://petstore.swagger.io/");
+    private static final String BASE_PUBLIC_PATH =
+            Config.get("PETSTORE_BASE_PUBLIC_PATH", "v2/");
 
     @Step("Создание дефолтной спецификации запроса")
     public static RequestSpecification defaultLocalSpec() {
