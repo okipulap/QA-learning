@@ -5,7 +5,6 @@ import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import io.qameta.allure.*;
 
 public class RequestSpec {
     private static final String API_KEY = Config.get("PETSTORE_API_KEY", "");
@@ -20,7 +19,6 @@ public class RequestSpec {
     private static final String BASE_PUBLIC_PATH =
             Config.get("PETSTORE_BASE_PUBLIC_PATH", "v2/");
 
-    @Step("Создание дефолтной спецификации запроса")
     public static RequestSpecification defaultLocalSpec() {
         return baseSpec(new RequestSpecBuilder()
                 .setBaseUri(BASE_URI)
@@ -29,7 +27,6 @@ public class RequestSpec {
                 .setContentType(ContentType.JSON));
     }
 
-    @Step("Создание спецификации публичного petstore")
     public static RequestSpecification publicSpec() {
         return baseSpec(new RequestSpecBuilder()
                 .setBaseUri(BASE_PUBLIC_URI)
@@ -38,7 +35,6 @@ public class RequestSpec {
                 .setContentType(ContentType.JSON));
     }
 
-    @Step("Создание спецификации запроса для form data")
     public static RequestSpecification formDataSpec() {
         return baseSpec(new RequestSpecBuilder()
                 .setBaseUri(BASE_URI)
@@ -47,7 +43,6 @@ public class RequestSpec {
                 .setContentType(ContentType.URLENC));
     }
 
-    @Step("Создание спецификации запроса для запроса загрузки изображения")
     public static RequestSpecification uploadImageSpec() {
         return baseSpec(new RequestSpecBuilder()
                 .setBaseUri(BASE_PUBLIC_URI)

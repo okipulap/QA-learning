@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -24,7 +25,7 @@ import java.util.stream.Stream;
 @Owner("Nikita Tkachenko")
 public class PetTests {
     private static PetClient client;
-    private Long petId;
+    private final List<Long> createdPets = new ArrayList<>();
 
     @BeforeAll
     public static void setUp() {
@@ -93,7 +94,7 @@ public class PetTests {
         Pet request = PetFactory.createPet("available");
 
         Pet response = client.createPet(request);
-        petId = response.getId();
+        createdPets.add(response.getId());
 
         assertPetFieldsMatch(request, response);
     }
@@ -108,7 +109,6 @@ public class PetTests {
         Pet postRequest = PetFactory.createPet("available");
         Pet postResponse = client.createPet(postRequest);
 
-        petId = postResponse.getId();
 
         Pet formDataRequest = new Pet();
         formDataRequest.setId(postRequest.getId());
@@ -118,6 +118,8 @@ public class PetTests {
         Pet formDataResponse = client.updatePetWithFormData(
                 formDataRequest.getId(),
                 formDataRequest.getName(), formDataRequest.getStatus());
+
+        createdPets.add(formDataResponse.getId());
 
         assertNotNull(formDataResponse);
         assertEquals(formDataRequest.getName(), formDataResponse.getName());
@@ -153,10 +155,10 @@ public class PetTests {
     @Feature("Ручка API загрузки изображения питомца")
     @Story("Юзер загружает изображение питомца")
     @Description("""
-    Тест выполнен на публичной версии Swagger Petstore.
-    Локальная реализация данного endpoint имеет
-    расхождение с ожидаемым поведением.
-    """)
+        Тест выполнен на публичной версии Swagger Petstore.
+        Локальная реализация данного endpoint имеет
+        расхождение с ожидаемым поведением.
+        """)
     void uploadPetImageTestWithStatus200() throws Exception {
         Pet request = PetFactory.createPet("available");
         Pet response = client.createPet(request);
@@ -165,7 +167,7 @@ public class PetTests {
 
         ApiResponse uploadImageResponse = client.uploadPetImage(response.getId(), image);
 
-        petId = response.getId();
+        createdPets.add(response.getId());
 
         assertNotNull(uploadImageResponse);
         assertEquals(200, uploadImageResponse.getCode());
@@ -199,7 +201,7 @@ public class PetTests {
 
         client.createPet(request);
         Pet getResponse = client.getPetById(request.getId());
-        petId = getResponse.getId();
+        createdPets.add(getResponse.getId());
 
         assertNotNull(getResponse);
         assertPetFieldsMatch(request, getResponse);
@@ -207,8 +209,8 @@ public class PetTests {
 
     @ParameterizedTest
     @CsvSource({"available",
-            "pending",
-            "sold"
+                "pending",
+                "sold"
     })
     @Tag("Positive")
     @DisplayName("Проверка выборки питомцев по статусу")
@@ -239,8 +241,8 @@ public class PetTests {
 
     @ParameterizedTest
     @CsvSource({"tag1",
-            "tag2",
-            "tag3"
+                "tag2",
+                "tag3"
     })
     @Tag("Positive")
     @DisplayName("Проверка выборки питомцев по тэгу")
@@ -273,7 +275,7 @@ public class PetTests {
 
     @ParameterizedTest
     @CsvSource({"pending",
-            "sold"})
+                "sold"})
     @Tag("Positive")
     @DisplayName("Проверка изменения статуса питомца")
     @Severity(SeverityLevel.MINOR)
@@ -282,7 +284,7 @@ public class PetTests {
     void putPetTestWithStatus200(String status) {
         Pet postRequest = PetFactory.createPet("available");
 
-        Pet createResponse = client.createPet(postRequest);
+        client.createPet(postRequest);
 
         Pet putRequest = PetFactory.updatePetFromExisting(
                 postRequest.getId(), "putPet", status,
@@ -291,7 +293,7 @@ public class PetTests {
         Pet putResponse = client.putPet(putRequest);
         Pet getResponse = client.getPetById(putRequest.getId());
 
-        petId = createResponse.getId();
+        createdPets.add(getResponse.getId());
 
         assertPetFieldsMatch(putRequest, putResponse);
         assertPetFieldsMatch(putRequest, getResponse);
@@ -345,8 +347,9 @@ public class PetTests {
 
     @AfterEach
     void cleanUp() {
-        if (petId != null) {
+        for (Long petId : createdPets) {
             client.deletePet(petId);
         }
+        createdPets.clear();
     }
 }

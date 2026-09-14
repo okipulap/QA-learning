@@ -8,16 +8,16 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 public class OrderFactory {
-    private static final Faker faker = new Faker();
+    private static final Faker FAKER = new Faker();
 
     private OrderFactory() {
     }
 
     public static Order randomOrder() {
         return Order.builder()
-                .id(faker.number().randomNumber())
-                .petId(faker.number().randomNumber())
-                .quantity(faker.number().randomDigitNotZero())
+                .id(FAKER.number().randomNumber())
+                .petId(FAKER.number().randomNumber())
+                .quantity(FAKER.number().randomDigitNotZero())
                 .shipDate(OffsetDateTime
                         .now(ZoneOffset.UTC)
                         .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))

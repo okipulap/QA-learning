@@ -8,9 +8,16 @@ group = "org.example"
 version = "1.0-SNAPSHOT"
 
 val allureVersion = "2.35.3"
+val checkstyleVersion = "10.26.1"
 
 repositories {
     mavenCentral()
+}
+
+checkstyle {
+    toolVersion = checkstyleVersion
+    configFile = file("$rootDir/config//checkstyle/checkstyle.xml")
+    maxErrors = 0
 }
 
 dependencies {
@@ -40,12 +47,6 @@ dependencies {
     //javaFaker
     testImplementation("com.github.javafaker:javafaker:1.0.2")
 
-    // JAXB API
-    testImplementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
-
-    // JAXB Runtime (реализация)
-    testRuntimeOnly("org.glassfish.jaxb:jaxb-runtime:4.0.5")
-
     //JUnit5
     testImplementation(platform("org.junit:junit-bom:5.10.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -57,4 +58,8 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.named("check") {
+    dependsOn("checkstyleTest")
 }

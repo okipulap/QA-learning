@@ -11,6 +11,8 @@ import org.junit.jupiter.api.*;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
@@ -19,7 +21,7 @@ import static org.assertj.core.api.Assertions.*;
 @Owner("Nikita Tkachenko")
 public class StoreTests {
     private static StoreClient client;
-    private Long storeId;
+    private final List<Long> createdOrders = new ArrayList<>();
 
     @BeforeAll
     public static void setUp() {
@@ -67,7 +69,7 @@ public class StoreTests {
         Order request = OrderFactory.randomOrder();
 
         Order response = client.postOrder(request);
-        storeId = response.getId();
+        createdOrders.add(response.getId());
 
         assertOrderFieldsMatch(request, response);
     }
@@ -83,7 +85,7 @@ public class StoreTests {
         Order postResponse = client.postOrder(postRequest);
 
         Order getResponse = client.getOrderById(postResponse.getId());
-        storeId = getResponse.getId();
+        createdOrders.add(getResponse.getId());
 
         assertOrderFieldsMatch(postRequest, getResponse);
     }
@@ -133,8 +135,9 @@ public class StoreTests {
 
     @AfterEach
     void cleanUp() {
-        if (storeId != null) {
-            client.deleteOrder(storeId);
+        for (Long orderId : createdOrders) {
+            client.deleteOrder(orderId);
         }
+        createdOrders.clear();
     }
 }

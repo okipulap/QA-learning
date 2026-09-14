@@ -7,20 +7,20 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class UserFactory {
-    private static final Faker faker = new Faker();
+    private static final Faker FAKER = new Faker();
 
     private UserFactory() {
     }
 
     public static User randomUser() {
         return User.builder()
-                .id(faker.number().randomNumber())
-                .username(faker.funnyName().name() + faker.number().digits(4))
-                .firstName(faker.name().firstName())
-                .lastName(faker.name().lastName())
-                .email(faker.internet().emailAddress())
-                .password(faker.internet().password())
-                .phone(faker.phoneNumber().phoneNumber())
+                .id(FAKER.number().randomNumber())
+                .username(FAKER.funnyName().name() + FAKER.number().digits(4))
+                .firstName(FAKER.name().firstName())
+                .lastName(FAKER.name().lastName())
+                .email(FAKER.internet().emailAddress())
+                .password(FAKER.internet().password())
+                .phone(FAKER.phoneNumber().phoneNumber())
                 .userStatus(1)
                 .build();
     }

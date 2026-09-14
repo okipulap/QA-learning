@@ -8,26 +8,26 @@ import com.github.javafaker.Faker;
 import java.util.List;
 
 public class PetFactory {
-    private static final Faker faker = new Faker();
+    private static final Faker FAKER = new Faker();
 
     private PetFactory() {
     }
 
     public static Pet createPet(String status) {
-        return createPet(faker.animal().name(), status);
+        return createPet(FAKER.animal().name(), status);
     }
 
     public static Pet createPet(String name, String status) {
         return Pet.builder()
-                .id(faker.number().randomNumber())
+                .id(FAKER.number().randomNumber())
                 .name(name)
                 .category(Category.builder()
                         .id(1L)
-                        .name(faker.dog().gender())
+                        .name(FAKER.dog().gender())
                         .build())
                 .tags(List.of(TagsItem.builder()
                         .id(1L)
-                        .name(faker.dog().breed())
+                        .name(FAKER.dog().breed())
                         .build()))
                 .photoUrls(List.of("https://example.com/photo.jpg"))
                 .status(status)
@@ -40,11 +40,11 @@ public class PetFactory {
                 .name(name)
                 .category(Category.builder()
                         .id(1L)
-                        .name(faker.dog().gender())
+                        .name(FAKER.dog().gender())
                         .build())
                 .tags(List.of(TagsItem.builder()
                         .id(1L)
-                        .name(faker.dog().breed())
+                        .name(FAKER.dog().breed())
                         .build()))
                 .photoUrls(List.of("https://example.com/photo.jpg"))
                 .status(status)

@@ -12,7 +12,7 @@ import java.util.List;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
-public class UserClient extends ApiBaseClient{
+public class UserClient extends ApiBaseClient {
 
     private static final String USER_ENDPOINT = "/user";
 
@@ -38,7 +38,7 @@ public class UserClient extends ApiBaseClient{
                 .log().ifError()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
-                .as(new TypeRef<>() {});
+                .as(new TypeRef<>() { });
     }
 
     @Step("Получение юзера по его username: {username}")
