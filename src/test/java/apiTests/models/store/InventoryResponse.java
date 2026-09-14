@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class InventoryResponse {
 
-    @JsonProperty("approved")
-    private int approved;
+	@JsonProperty("approved")
+	private int approved;
 
-    @JsonProperty("placed")
-    private int placed;
+	@JsonProperty("placed")
+	private int placed;
 
-    @JsonProperty("delivered")
-    private int delivered;
+	@JsonProperty("delivered")
+	private int delivered;
 }

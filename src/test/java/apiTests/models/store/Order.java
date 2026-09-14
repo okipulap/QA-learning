@@ -12,21 +12,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Order {
 
-    @JsonProperty("id")
-    private Long id;
+	@JsonProperty("id")
+	private Long id;
 
-    @JsonProperty("petId")
-    private Long petId;
+	@JsonProperty("petId")
+	private Long petId;
 
-    @JsonProperty("quantity")
-    private int quantity;
+	@JsonProperty("quantity")
+	private int quantity;
 
-    @JsonProperty("shipDate")
-    private String shipDate;
+	@JsonProperty("shipDate")
+	private String shipDate;
 
-    @JsonProperty("status")
-    private String status;
+	@JsonProperty("status")
+	private String status;
 
-    @JsonProperty("complete")
-    private boolean complete;
+	@JsonProperty("complete")
+	private boolean complete;
 }

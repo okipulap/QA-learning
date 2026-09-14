@@ -14,21 +14,21 @@ import java.util.List;
 @AllArgsConstructor
 public class Pet {
 
-    @JsonProperty("id")
-    private Long id;
+	@JsonProperty("id")
+	private Long id;
 
-    @JsonProperty("name")
-    private String name;
+	@JsonProperty("name")
+	private String name;
 
-    @JsonProperty("category")
-    private Category category;
+	@JsonProperty("category")
+	private Category category;
 
-    @JsonProperty("photoUrls")
-    private List<String> photoUrls;
+	@JsonProperty("photoUrls")
+	private List<String> photoUrls;
 
-    @JsonProperty("tags")
-    private List<TagsItem> tags;
+	@JsonProperty("tags")
+	private List<TagsItem> tags;
 
-    @JsonProperty("status")
-    private String status;
+	@JsonProperty("status")
+	private String status;
 }

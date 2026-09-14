@@ -7,40 +7,40 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class UserFactory {
-    private static final Faker FAKER = new Faker();
+	private static final Faker FAKER = new Faker();
 
-    private UserFactory() {
-    }
+	private UserFactory() {
+	}
 
-    public static User randomUser() {
-        return User.builder()
-                .id(FAKER.number().randomNumber())
-                .username(FAKER.funnyName().name() + FAKER.number().digits(4))
-                .firstName(FAKER.name().firstName())
-                .lastName(FAKER.name().lastName())
-                .email(FAKER.internet().emailAddress())
-                .password(FAKER.internet().password())
-                .phone(FAKER.phoneNumber().phoneNumber())
-                .userStatus(1)
-                .build();
-    }
+	public static User randomUser() {
+		return User.builder()
+			.id(FAKER.number().randomNumber())
+			.username(FAKER.funnyName().name() + FAKER.number().digits(4))
+			.firstName(FAKER.name().firstName())
+			.lastName(FAKER.name().lastName())
+			.email(FAKER.internet().emailAddress())
+			.password(FAKER.internet().password())
+			.phone(FAKER.phoneNumber().phoneNumber())
+			.userStatus(1)
+			.build();
+	}
 
-    public static List<User> listOfUsers(int count) {
-        return IntStream.range(0, count)
-                .mapToObj(i -> randomUser())
-                .toList();
-    }
+	public static List<User> listOfUsers(int count) {
+		return IntStream.range(0, count)
+			.mapToObj(i -> randomUser())
+			.toList();
+	}
 
-    public static User updateUser(Long id, String username) {
-        return User.builder()
-                .id(id)
-                .username(username)
-                .firstName("Test")
-                .lastName("Testovich")
-                .email("test@email.com")
-                .password("testPass")
-                .phone("+79999999999")
-                .userStatus(5)
-                .build();
-    }
+	public static User updateUser(Long id, String username) {
+		return User.builder()
+			.id(id)
+			.username(username)
+			.firstName("Test")
+			.lastName("Testovich")
+			.email("test@email.com")
+			.password("testPass")
+			.phone("+79999999999")
+			.userStatus(5)
+			.build();
+	}
 }

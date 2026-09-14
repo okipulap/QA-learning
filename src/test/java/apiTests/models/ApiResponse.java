@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ApiResponse {
 
-    @JsonProperty("code")
-    private int code;
+	@JsonProperty("code")
+	private int code;
 
-    @JsonProperty("type")
-    private String type;
+	@JsonProperty("type")
+	private String type;
 
-    @JsonProperty("message")
-    private String message;
+	@JsonProperty("message")
+	private String message;
 }

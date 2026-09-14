@@ -18,178 +18,178 @@ import static org.junit.jupiter.api.Assertions.*;
 @Owner("Nikita Tkachenko")
 public class UserTests {
 
-    private static UserClient client;
-    private final List<String> createdUsernames = new ArrayList<>();
+	private static UserClient client;
+	private final List<String> createdUsernames = new ArrayList<>();
 
-    @BeforeAll
-    public static void setUp() {
-        client = new UserClient();
-    }
+	@BeforeAll
+	public static void setUp() {
+		client = new UserClient();
+	}
 
-    private void assertUserFieldsMatch(User request, User response) {
-        SoftAssertions soft = new SoftAssertions();
+	private void assertUserFieldsMatch(User request, User response) {
+		SoftAssertions soft = new SoftAssertions();
 
-        soft.assertThat(request.getId()).isEqualTo(response.getId());
-        soft.assertThat(request.getUsername()).isEqualTo(response.getUsername());
-        soft.assertThat(request.getFirstName()).isEqualTo(response.getFirstName());
-        soft.assertThat(request.getLastName()).isEqualTo(response.getLastName());
-        soft.assertThat(request.getEmail()).isEqualTo(response.getEmail());
-        soft.assertThat(request.getPassword()).isEqualTo(response.getPassword());
-        soft.assertThat(request.getPhone()).isEqualTo(response.getPhone());
-        soft.assertThat(request.getUserStatus()).isEqualTo(response.getUserStatus());
-        soft.assertAll();
-    }
+		soft.assertThat(request.getId()).isEqualTo(response.getId());
+		soft.assertThat(request.getUsername()).isEqualTo(response.getUsername());
+		soft.assertThat(request.getFirstName()).isEqualTo(response.getFirstName());
+		soft.assertThat(request.getLastName()).isEqualTo(response.getLastName());
+		soft.assertThat(request.getEmail()).isEqualTo(response.getEmail());
+		soft.assertThat(request.getPassword()).isEqualTo(response.getPassword());
+		soft.assertThat(request.getPhone()).isEqualTo(response.getPhone());
+		soft.assertThat(request.getUserStatus()).isEqualTo(response.getUserStatus());
+		soft.assertAll();
+	}
 
-    @Test
-    @Tag("Positive")
-    @DisplayName("Создание юзера")
-    @Severity(SeverityLevel.BLOCKER)
-    @Feature("Ручка API создания юзера")
-    @Story("Юзер создает юзера")
-    void postUserWithStatus200() {
-        User request = UserFactory.randomUser();
+	@Test
+	@Tag("Positive")
+	@DisplayName("Создание юзера")
+	@Severity(SeverityLevel.BLOCKER)
+	@Feature("Ручка API создания юзера")
+	@Story("Юзер создает юзера")
+	void postUserWithStatus200() {
+		User request = UserFactory.randomUser();
 
-        User response = client.postUser(request);
+		User response = client.postUser(request);
 
-        createdUsernames.add(response.getUsername());
+		createdUsernames.add(response.getUsername());
 
-        assertUserFieldsMatch(request, response);
-    }
+		assertUserFieldsMatch(request, response);
+	}
 
-    @Test
-    @Tag("Positive")
-    @DisplayName("Получение юзера")
-    @Severity(SeverityLevel.BLOCKER)
-    @Feature("Ручка API создания юзера")
-    @Story("Юзер получает юзера")
-    void getUserWithStatus200() {
-        User request = UserFactory.randomUser();
+	@Test
+	@Tag("Positive")
+	@DisplayName("Получение юзера")
+	@Severity(SeverityLevel.BLOCKER)
+	@Feature("Ручка API создания юзера")
+	@Story("Юзер получает юзера")
+	void getUserWithStatus200() {
+		User request = UserFactory.randomUser();
 
-        User response = client.postUser(request);
-        User getResponse = client.getUserByUsername(response.getUsername());
+		User response = client.postUser(request);
+		User getResponse = client.getUserByUsername(response.getUsername());
 
-        createdUsernames.add(getResponse.getUsername());
+		createdUsernames.add(getResponse.getUsername());
 
-        assertNotNull(getResponse);
-        assertUserFieldsMatch(request, getResponse);
-    }
+		assertNotNull(getResponse);
+		assertUserFieldsMatch(request, getResponse);
+	}
 
-    @Test
-    @Tag("Positive")
-    @DisplayName("Создание списка юзеров")
-    @Severity(SeverityLevel.BLOCKER)
-    @Feature("Ручка API создания списка юзеров")
-    @Story("Юзер создает список юзеров")
-    void postUserWithListStatus200() {
-        List<User> request = UserFactory.listOfUsers(2);
-        createdUsernames.add(request.get(0).getUsername());
-        createdUsernames.add(request.get(1).getUsername());
+	@Test
+	@Tag("Positive")
+	@DisplayName("Создание списка юзеров")
+	@Severity(SeverityLevel.BLOCKER)
+	@Feature("Ручка API создания списка юзеров")
+	@Story("Юзер создает список юзеров")
+	void postUserWithListStatus200() {
+		List<User> request = UserFactory.listOfUsers(2);
+		createdUsernames.add(request.get(0).getUsername());
+		createdUsernames.add(request.get(1).getUsername());
 
-        List<User> response = client.postUsersWithList(request);
+		List<User> response = client.postUsersWithList(request);
 
-        assertNotNull(response);
-        assertEquals(2, response.size());
+		assertNotNull(response);
+		assertEquals(2, response.size());
 
-        User getFirst = client.getUserByUsername(request.get(0).getUsername());
-        User getSecond = client.getUserByUsername(request.get(1).getUsername());
+		User getFirst = client.getUserByUsername(request.get(0).getUsername());
+		User getSecond = client.getUserByUsername(request.get(1).getUsername());
 
-        assertEquals(request.get(0).getUsername(), getFirst.getUsername());
-        assertEquals(request.get(0).getEmail(), getFirst.getEmail());
+		assertEquals(request.get(0).getUsername(), getFirst.getUsername());
+		assertEquals(request.get(0).getEmail(), getFirst.getEmail());
 
-        assertEquals(request.get(1).getUsername(), getSecond.getUsername());
-        assertEquals(request.get(1).getEmail(), getSecond.getEmail());
+		assertEquals(request.get(1).getUsername(), getSecond.getUsername());
+		assertEquals(request.get(1).getEmail(), getSecond.getEmail());
 
-    }
+	}
 
-    @Test
-    @Tag("Negative")
-    @DisplayName("Получение юзера по несуществующему username")
-    @Severity(SeverityLevel.CRITICAL)
-    @Feature("Ручка API создания юзера")
-    @Story("Юзер получает юзера")
-    void getUserExpected404() {
-        String fakeUserName = "fakeGetUser";
+	@Test
+	@Tag("Negative")
+	@DisplayName("Получение юзера по несуществующему username")
+	@Severity(SeverityLevel.CRITICAL)
+	@Feature("Ручка API создания юзера")
+	@Story("Юзер получает юзера")
+	void getUserExpected404() {
+		String fakeUserName = "fakeGetUser";
 
-        Response getResponse = client.getUserExpected404(fakeUserName);
-
-
-        assertEquals("User not found", getResponse.asString());
-    }
-
-    @Test
-    @Tag("Positive")
-    @DisplayName("Изменение юзера по его username")
-    @Severity(SeverityLevel.BLOCKER)
-    @Feature("Ручка API изменения юзера")
-    @Story("Юзер изменяет юзера")
-    void putUserWithStatus200() {
-        User postRequest = UserFactory.randomUser();
-        client.postUser(postRequest);
-
-        User putRequest = UserFactory.updateUser(postRequest.getId(), postRequest.getUsername());
-        User putResponse = client.putUserByUsername(putRequest, postRequest.getUsername());
-
-        User getResponse = client.getUserByUsername(putResponse.getUsername());
-
-        createdUsernames.add(putResponse.getUsername());
-
-        assertNotNull(putResponse);
-        assertUserFieldsMatch(putRequest, putResponse);
-        assertUserFieldsMatch(putRequest, getResponse);
-    }
-
-    @Test
-    @Tag("Negative")
-    @DisplayName("Изменение юзера по несуществующему username")
-    @Severity(SeverityLevel.CRITICAL)
-    @Feature("Ручка API изменения юзера")
-    @Story("Юзер изменяет несуществующего юзера")
-    void putUserExpected404() {
-        String fakeUsername = "tesUsername1234";
-
-        User putRequest = UserFactory.updateUser(1L, fakeUsername);
-
-        Response putResponse = client.putUserByUsernameExpected404(putRequest, fakeUsername);
-
-        assertEquals("User not found", putResponse.asString());
-    }
+		Response getResponse = client.getUserExpected404(fakeUserName);
 
 
-    @Test
-    @Tag("Positive")
-    @DisplayName("Тест удаления юзера")
-    @Severity(SeverityLevel.BLOCKER)
-    @Feature("Ручка API удаления юзера")
-    @Story("Юзер удаляет юзера")
-    void deleteUserWithStatus200() {
-        User postRequest = UserFactory.randomUser();
+		assertEquals("User not found", getResponse.asString());
+	}
 
-        User postResponse = client.postUser(postRequest);
+	@Test
+	@Tag("Positive")
+	@DisplayName("Изменение юзера по его username")
+	@Severity(SeverityLevel.BLOCKER)
+	@Feature("Ручка API изменения юзера")
+	@Story("Юзер изменяет юзера")
+	void putUserWithStatus200() {
+		User postRequest = UserFactory.randomUser();
+		client.postUser(postRequest);
 
-        Response delResponse = client.deleteUser(postResponse.getUsername());
+		User putRequest = UserFactory.updateUser(postRequest.getId(), postRequest.getUsername());
+		User putResponse = client.putUserByUsername(putRequest, postRequest.getUsername());
 
-        assertEquals(HttpStatus.SC_OK, delResponse.getStatusCode());
-    }
+		User getResponse = client.getUserByUsername(putResponse.getUsername());
 
-    @Test
-    @Tag("Negative")
-    @DisplayName("Тест удаления юзера с несуществующим username")
-    @Severity(SeverityLevel.CRITICAL)
-    @Feature("Ручка API удаления юзера")
-    @Story("Юзер удаляет юзера")
-    void deleteUserExpected404() {
-        String fakeUserName = "testUserName";
+		createdUsernames.add(putResponse.getUsername());
 
-        Response delResponse = client.deleteUserExpected404(fakeUserName);
+		assertNotNull(putResponse);
+		assertUserFieldsMatch(putRequest, putResponse);
+		assertUserFieldsMatch(putRequest, getResponse);
+	}
 
-        assertEquals(HttpStatus.SC_NOT_FOUND, delResponse.getStatusCode());
-    }
+	@Test
+	@Tag("Negative")
+	@DisplayName("Изменение юзера по несуществующему username")
+	@Severity(SeverityLevel.CRITICAL)
+	@Feature("Ручка API изменения юзера")
+	@Story("Юзер изменяет несуществующего юзера")
+	void putUserExpected404() {
+		String fakeUsername = "tesUsername1234";
 
-    @AfterEach
-    void cleanUp() {
-        for (String username : createdUsernames) {
-            client.deleteUser(username);
-        }
-        createdUsernames.clear();
-    }
+		User putRequest = UserFactory.updateUser(1L, fakeUsername);
+
+		Response putResponse = client.putUserByUsernameExpected404(putRequest, fakeUsername);
+
+		assertEquals("User not found", putResponse.asString());
+	}
+
+
+	@Test
+	@Tag("Positive")
+	@DisplayName("Тест удаления юзера")
+	@Severity(SeverityLevel.BLOCKER)
+	@Feature("Ручка API удаления юзера")
+	@Story("Юзер удаляет юзера")
+	void deleteUserWithStatus200() {
+		User postRequest = UserFactory.randomUser();
+
+		User postResponse = client.postUser(postRequest);
+
+		Response delResponse = client.deleteUser(postResponse.getUsername());
+
+		assertEquals(HttpStatus.SC_OK, delResponse.getStatusCode());
+	}
+
+	@Test
+	@Tag("Negative")
+	@DisplayName("Тест удаления юзера с несуществующим username")
+	@Severity(SeverityLevel.CRITICAL)
+	@Feature("Ручка API удаления юзера")
+	@Story("Юзер удаляет юзера")
+	void deleteUserExpected404() {
+		String fakeUserName = "testUserName";
+
+		Response delResponse = client.deleteUserExpected404(fakeUserName);
+
+		assertEquals(HttpStatus.SC_NOT_FOUND, delResponse.getStatusCode());
+	}
+
+	@AfterEach
+	void cleanUp() {
+		for (String username : createdUsernames) {
+			client.deleteUser(username);
+		}
+		createdUsernames.clear();
+	}
 }
