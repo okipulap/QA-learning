@@ -43,6 +43,7 @@ public class UserTests {
 
 	@Test
 	@Tag("Positive")
+	@Tag("Smoke")
 	@DisplayName("Создание юзера")
 	@Severity(SeverityLevel.BLOCKER)
 	@Feature("Ручка API создания юзера")
@@ -59,6 +60,7 @@ public class UserTests {
 
 	@Test
 	@Tag("Positive")
+	@Tag("Smoke")
 	@DisplayName("Получение юзера")
 	@Severity(SeverityLevel.BLOCKER)
 	@Feature("Ручка API создания юзера")
@@ -78,7 +80,7 @@ public class UserTests {
 	@Test
 	@Tag("Positive")
 	@DisplayName("Создание списка юзеров")
-	@Severity(SeverityLevel.BLOCKER)
+	@Severity(SeverityLevel.CRITICAL)
 	@Feature("Ручка API создания списка юзеров")
 	@Story("Юзер создает список юзеров")
 	void postUserWithListStatus200() {
@@ -117,6 +119,7 @@ public class UserTests {
 
 	@Test
 	@Tag("Positive")
+	@Tag("Smoke")
 	@DisplayName("Изменение юзера по его username")
 	@Severity(SeverityLevel.BLOCKER)
 	@Feature("Ручка API изменения юзера")
@@ -154,6 +157,7 @@ public class UserTests {
 
 	@Test
 	@Tag("Positive")
+	@Tag("Smoke")
 	@DisplayName("Тест удаления юзера")
 	@Severity(SeverityLevel.BLOCKER)
 	@Feature("Ручка API удаления юзера")

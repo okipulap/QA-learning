@@ -19,9 +19,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -37,11 +35,6 @@ public class PetTests {
 	public static void setUp() {
 		client = new PetClient();
 	}
-
-//	@Attachment(value = "Изображение питомца", type = "image/jpeg")
-//	public byte[] attachPetImage(File image) throws IOException {
-//		return Files.readAllBytes(image.toPath());
-//	}
 
 	@Step("Проверка полей питомца")
 	private void assertPetFieldsMatch(Pet request, Pet response) {
@@ -98,6 +91,7 @@ public class PetTests {
 
 	@Test
 	@Tag("Positive")
+	@Tag("Smoke")
 	@DisplayName("Проверка создания питомца")
 	@Severity(SeverityLevel.BLOCKER)
 	@Feature("Ручка API добавления питомца")
@@ -114,7 +108,7 @@ public class PetTests {
 	@Test
 	@Tag("Positive")
 	@DisplayName("Проверка изменения питомца с помощью формы")
-	@Severity(SeverityLevel.NORMAL)
+	@Severity(SeverityLevel.CRITICAL)
 	@Feature("Ручка API изменения питомца с помощью формы")
 	@Story("Юзер создает изменения с помощью формы")
 	void updateWithFormDataTest() {
@@ -198,7 +192,7 @@ public class PetTests {
 	@MethodSource("invalidPetRequests")
 	@Tag("Negative")
 	@DisplayName("Проверка создания питомца с невалидными id, name")
-	@Severity(SeverityLevel.TRIVIAL)
+	@Severity(SeverityLevel.NORMAL)
 	@Feature("Ручка API добавления питомца")
 	@Story("Юзер создает питомца")
 	void createPetTestWithStatus400(String brokenJson) {
@@ -211,6 +205,7 @@ public class PetTests {
 
 	@Test
 	@Tag("Positive")
+	@Tag("Smoke")
 	@DisplayName("Проверка выборки питомца")
 	@Severity(SeverityLevel.BLOCKER)
 	@Feature("Ручка API выборки питомца")
@@ -295,7 +290,7 @@ public class PetTests {
 		"sold"})
 	@Tag("Positive")
 	@DisplayName("Проверка изменения статуса питомца")
-	@Severity(SeverityLevel.MINOR)
+	@Severity(SeverityLevel.BLOCKER)
 	@Feature("Ручка API изменения статуса питомца")
 	@Story("Юзер изменяет статус питомца")
 	void putPetTestWithStatus200(String status) {
@@ -319,7 +314,7 @@ public class PetTests {
 	@Test
 	@Tag("Negative")
 	@DisplayName("Проверка изменения несуществующего питомца ")
-	@Severity(SeverityLevel.MINOR)
+	@Severity(SeverityLevel.NORMAL)
 	@Feature("Ручка API изменения статуса питомца")
 	@Story("Юзер изменяет статус питомца")
 	void putPetExpected404() {
@@ -332,6 +327,7 @@ public class PetTests {
 
 	@Test
 	@Tag("Positive")
+	@Tag("Smoke")
 	@DisplayName("Проверка удаления питомца")
 	@Severity(SeverityLevel.BLOCKER)
 	@Feature("Ручка API удаления питомца")

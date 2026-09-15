@@ -16,7 +16,7 @@ repositories {
 
 checkstyle {
     toolVersion = checkstyleVersion
-    configFile = file("$rootDir/config//checkstyle/checkstyle.xml")
+    configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
     maxErrors = 0
 }
 

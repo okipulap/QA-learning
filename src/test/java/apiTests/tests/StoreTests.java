@@ -23,6 +23,7 @@ public class StoreTests {
 	private static StoreClient client;
 	private final List<Long> createdOrders = new ArrayList<>();
 	private static final Long FAKE_ID = 9999L;
+
 	@BeforeAll
 	public static void setUp() {
 		client = new StoreClient();
@@ -46,7 +47,7 @@ public class StoreTests {
 	@Test
 	@Tag("Positive")
 	@DisplayName("Показ роста счетчика после создания заказа")
-	@Severity(SeverityLevel.NORMAL)
+	@Severity(SeverityLevel.CRITICAL)
 	@Feature("Ручка API получения статусов заказа")
 	@Story("Юзер получает количества заказов по статусам")
 	void getInventoryTestWithStatus200() {
@@ -61,6 +62,7 @@ public class StoreTests {
 
 	@Test
 	@Tag("Positive")
+	@Tag("Smoke")
 	@DisplayName("Создание заказа")
 	@Severity(SeverityLevel.BLOCKER)
 	@Feature("Ручка API создания заказа")
@@ -76,6 +78,7 @@ public class StoreTests {
 
 	@Test
 	@Tag("Positive")
+	@Tag("Smoke")
 	@DisplayName("Получение заказа")
 	@Severity(SeverityLevel.BLOCKER)
 	@Feature("Ручка API Получения заказа")
@@ -93,7 +96,7 @@ public class StoreTests {
 	@Test
 	@Tag("Negative")
 	@DisplayName("Проверка статуса 404 при ненахождении заказа")
-	@Severity(SeverityLevel.NORMAL)
+	@Severity(SeverityLevel.CRITICAL)
 	@Feature("Ручка API выборки заказа")
 	@Story("Юзер получает заказ")
 	void getOrderTestWithStatus404() {
@@ -104,6 +107,7 @@ public class StoreTests {
 
 	@Test
 	@Tag("Positive")
+	@Tag("Smoke")
 	@DisplayName("Удаление заказа")
 	@Severity(SeverityLevel.BLOCKER)
 	@Feature("Ручка API Удаление заказа")
