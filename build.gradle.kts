@@ -83,3 +83,19 @@ tasks.named("check") {
     dependsOn("checkstyleTest")
 }
 
+tasks.register<Test>("smokeTest") {
+	useJUnitPlatform() {
+		includeTags("Smoke")
+	}
+	group = "verification"
+	description = "Набор критичных проверок"
+}
+
+tasks.register<Test>("regressionTest") {
+	useJUnitPlatform() {
+		includeTags("Positive", "Negative")
+	}
+	group = "verification"
+	description = "Полный регресс"
+}
+
