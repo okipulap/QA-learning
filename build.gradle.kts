@@ -14,12 +14,6 @@ repositories {
     mavenCentral()
 }
 
-allure {
-	report {
-		configFile.set(layout.projectDirectory.file("allurerc.mjs"))
-	}
-}
-
 checkstyle {
     toolVersion = checkstyleVersion
     configFile = file("$rootDir/config//checkstyle/checkstyle.xml")

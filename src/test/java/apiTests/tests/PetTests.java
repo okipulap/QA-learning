@@ -18,6 +18,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -33,6 +37,11 @@ public class PetTests {
 	public static void setUp() {
 		client = new PetClient();
 	}
+
+//	@Attachment(value = "Изображение питомца", type = "image/jpeg")
+//	public byte[] attachPetImage(File image) throws IOException {
+//		return Files.readAllBytes(image.toPath());
+//	}
 
 	@Step("Проверка полей питомца")
 	private void assertPetFieldsMatch(Pet request, Pet response) {
@@ -165,6 +174,15 @@ public class PetTests {
 		Pet response = client.createPet(request);
 
 		File image = new File(getClass().getResource("/pet.jpg").toURI());
+
+		try (InputStream inputStream = new FileInputStream(image)) {
+			Allure.addAttachment(
+				"Изображение питомца",
+				"image/jpeg",
+				inputStream,
+				".jpg"
+			);
+		}
 
 		ApiResponse uploadImageResponse = client.uploadPetImage(response.getId(), image);
 
