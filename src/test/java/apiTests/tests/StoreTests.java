@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.*;
 public class StoreTests {
 	private static StoreClient client;
 	private final List<Long> createdOrders = new ArrayList<>();
-
+	private static final Long FAKE_ID = 9999L;
 	@BeforeAll
 	public static void setUp() {
 		client = new StoreClient();
@@ -97,9 +97,7 @@ public class StoreTests {
 	@Feature("Ручка API выборки заказа")
 	@Story("Юзер получает заказ")
 	void getOrderTestWithStatus404() {
-		Long fakeId = 9999L;
-
-		Response response = client.getOrderExpected404(fakeId);
+		Response response = client.getOrderExpected404(FAKE_ID);
 
 		assertEquals("Order not found", response.asString());
 	}
@@ -126,9 +124,7 @@ public class StoreTests {
 	@Feature("Ручка API Удаление заказа")
 	@Story("Юзер удаляет заказ")
 	void deleteOrderExpected404() {
-		Long fakeId = 9999L;
-
-		Response delResponse = client.deleteOrderExpected404(fakeId);
+		Response delResponse = client.deleteOrderExpected404(FAKE_ID);
 
 		assertEquals(HttpStatus.SC_NOT_FOUND, delResponse.getStatusCode());
 	}

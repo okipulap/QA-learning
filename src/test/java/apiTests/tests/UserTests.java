@@ -20,6 +20,7 @@ public class UserTests {
 
 	private static UserClient client;
 	private final List<String> createdUsernames = new ArrayList<>();
+	private static final String FAKE_USERNAME = "test_username";
 
 	@BeforeAll
 	public static void setUp() {
@@ -108,9 +109,7 @@ public class UserTests {
 	@Feature("Ручка API создания юзера")
 	@Story("Юзер получает юзера")
 	void getUserExpected404() {
-		String fakeUserName = "fakeGetUser";
-
-		Response getResponse = client.getUserExpected404(fakeUserName);
+		Response getResponse = client.getUserExpected404(FAKE_USERNAME);
 
 
 		assertEquals("User not found", getResponse.asString());
@@ -145,11 +144,9 @@ public class UserTests {
 	@Feature("Ручка API изменения юзера")
 	@Story("Юзер изменяет несуществующего юзера")
 	void putUserExpected404() {
-		String fakeUsername = "tesUsername1234";
+		User putRequest = UserFactory.updateUser(1L, FAKE_USERNAME);
 
-		User putRequest = UserFactory.updateUser(1L, fakeUsername);
-
-		Response putResponse = client.putUserByUsernameExpected404(putRequest, fakeUsername);
+		Response putResponse = client.putUserByUsernameExpected404(putRequest, FAKE_USERNAME);
 
 		assertEquals("User not found", putResponse.asString());
 	}
@@ -178,9 +175,7 @@ public class UserTests {
 	@Feature("Ручка API удаления юзера")
 	@Story("Юзер удаляет юзера")
 	void deleteUserExpected404() {
-		String fakeUserName = "testUserName";
-
-		Response delResponse = client.deleteUserExpected404(fakeUserName);
+		Response delResponse = client.deleteUserExpected404(FAKE_USERNAME);
 
 		assertEquals(HttpStatus.SC_NOT_FOUND, delResponse.getStatusCode());
 	}

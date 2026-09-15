@@ -27,12 +27,14 @@ import java.util.stream.Stream;
 public class PetTests {
 	private static PetClient client;
 	private final List<Long> createdPets = new ArrayList<>();
+	private static final Long FAKE_ID = 9999L;
 
 	@BeforeAll
 	public static void setUp() {
 		client = new PetClient();
 	}
 
+	@Step("Проверка полей питомца")
 	private void assertPetFieldsMatch(Pet request, Pet response) {
 		SoftAssertions soft = new SoftAssertions();
 		soft.assertThat(request.getId())
@@ -91,7 +93,7 @@ public class PetTests {
 	@Severity(SeverityLevel.BLOCKER)
 	@Feature("Ручка API добавления питомца")
 	@Story("Юзер создает питомца")
-	void createPetTest() {
+	void postPetWithStatus200() {
 		Pet request = PetFactory.createPet("available");
 
 		Pet response = client.createPet(request);
@@ -108,7 +110,7 @@ public class PetTests {
 	@Story("Юзер создает изменения с помощью формы")
 	void updateWithFormDataTest() {
 		Pet postRequest = PetFactory.createPet("available");
-		Pet postResponse = client.createPet(postRequest);
+		client.createPet(postRequest);
 
 
 		Pet formDataRequest = new Pet();
@@ -134,10 +136,8 @@ public class PetTests {
 	@Feature("Ручка API изменения питомца с помощью формы")
 	@Story("Юзер создает питомца с помощью формы")
 	void updateWithFormDataExpected404Test() {
-		Long fakeId = 9999L;
-
 		Pet formDataRequest = new Pet();
-		formDataRequest.setId(fakeId);
+		formDataRequest.setId(FAKE_ID);
 		formDataRequest.setName("form data name");
 		formDataRequest.setStatus("sold");
 
@@ -232,7 +232,7 @@ public class PetTests {
 	@Severity(SeverityLevel.NORMAL)
 	@Feature("Ручка API выборки питомцев по статусу")
 	@Story("Юзер получает питомцев по статусу")
-	void getPetByStatusWith404() {
+	void getPetByStatusWith400() {
 		ApiResponse petResponse = client.getPetByStatusExpected400("someStatus");
 
 		assertNotNull(petResponse);
@@ -266,9 +266,7 @@ public class PetTests {
 	@Feature("Ручка API выборки питомца")
 	@Story("Юзер получает питомца")
 	void getPetTestWithStatus404() {
-		Long fakeId = 9999L;
-
-		Response response = client.getPetExpected404(fakeId);
+		Response response = client.getPetExpected404(FAKE_ID);
 
 		assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());
 		assertEquals("Pet not found", response.asString());
@@ -307,9 +305,7 @@ public class PetTests {
 	@Feature("Ручка API изменения статуса питомца")
 	@Story("Юзер изменяет статус питомца")
 	void putPetExpected404() {
-		Long id = 9999L;
-
-		Pet putRequest = PetFactory.updatePet(id, "putPet", "sold");
+		Pet putRequest = PetFactory.updatePet(FAKE_ID, "putPet", "sold");
 
 		Response putResponse = client.putPetExpected404(putRequest);
 
@@ -340,8 +336,7 @@ public class PetTests {
 	@Feature("Ручка API удаления питомца")
 	@Story("Юзер удаляет питомца")
 	void deletePetTestWithStatus404() {
-		Long fakeId = 9999L;
-		Response response = client.deletePetExpected404(fakeId);
+		Response response = client.deletePetExpected404(FAKE_ID);
 
 		assertEquals(HttpStatus.SC_NOT_FOUND, response.getStatusCode());
 	}

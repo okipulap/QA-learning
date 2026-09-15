@@ -14,6 +14,12 @@ repositories {
     mavenCentral()
 }
 
+allure {
+	report {
+		configFile.set(layout.projectDirectory.file("allurerc.mjs"))
+	}
+}
+
 checkstyle {
     toolVersion = checkstyleVersion
     configFile = file("$rootDir/config//checkstyle/checkstyle.xml")
@@ -56,6 +62,25 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.27.7")
 }
 
+val writeAllureEnvironment by tasks.registering {
+doLast {
+	val resultsDir = layout.buildDirectory.dir("allure-results").get().asFile
+	resultsDir.mkdirs()
+	File(resultsDir, "environment.properties").writeText(
+		"""
+			Environment = local-docker
+			Petstore.Base.URI = ${System.getenv("PETSTORE_BASE_URI") ?: "http://localhost:8080/api/"}
+			Java.Version = ${System.getProperty("java.version")}
+			OS = ${System.getProperty("os.name")}
+		""".trimIndent() + "\n"
+	)
+}
+}
+
+tasks.named("allureReport") {
+	dependsOn(writeAllureEnvironment)
+}
+
 tasks.test {
     useJUnitPlatform()
 }
@@ -63,3 +88,4 @@ tasks.test {
 tasks.named("check") {
     dependsOn("checkstyleTest")
 }
+

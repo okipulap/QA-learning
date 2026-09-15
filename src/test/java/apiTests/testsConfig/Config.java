@@ -1,4 +1,4 @@
-package apiTests.config;
+package apiTests.testsConfig;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
