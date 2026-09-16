@@ -123,10 +123,18 @@ public class StoreTests {
 
 	@Test
 	@Tag("Negative")
+	@Tag("Bug")
+	@Issue("4")
 	@DisplayName("Удаление несуществующего заказа")
 	@Severity(SeverityLevel.CRITICAL)
 	@Feature("Ручка API Удаление заказа")
 	@Story("Юзер удаляет заказ")
+	@Description("""
+        Тест проверяет, что DELETE /store/order/{orderId} с несуществующим id
+        возвращает 404 Not Found, как задокументировано в OpenAPI-спецификации.
+        На локальном docker-образе swaggerapi/petstore3:1.0.27 эндпоинт
+        возвращает 200 OK вместо ожидаемого 404.
+		""")
 	void deleteOrderExpected404() {
 		Response delResponse = client.deleteOrderExpected404(FAKE_ID);
 

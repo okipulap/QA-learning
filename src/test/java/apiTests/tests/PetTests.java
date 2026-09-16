@@ -154,14 +154,17 @@ public class PetTests {
 
 	@Test
 	@Tag("Positive")
+	@Tag("Bug")
+	@Issue("3")
 	@DisplayName("Проверка загрузки изображения питомца")
 	@Severity(SeverityLevel.CRITICAL)
 	@Feature("Ручка API загрузки изображения питомца")
 	@Story("Юзер загружает изображение питомца")
 	@Description("""
-		Тест выполнен на публичной версии Swagger Petstore.
-		Локальная реализация данного endpoint имеет
-		расхождение с ожидаемым поведением.
+		Тест выполнен на публичной версии Swagger Petstore:
+		локальный docker-образ swaggerapi/petstore3:1.0.27 не обрабатывает
+		application/octet-stream для этого эндпоинта и возвращает 500
+		вместо ожидаемого 200.
 		""")
 	void uploadPetImageTestWithStatus200() throws Exception {
 		Pet request = PetFactory.createPet("available");
@@ -345,10 +348,17 @@ public class PetTests {
 
 	@Test
 	@Tag("Negative")
+	@Tag("Bug")
+	@Issue("2")
 	@DisplayName("Проверка удаления питомца с несуществующим id")
 	@Severity(SeverityLevel.CRITICAL)
 	@Feature("Ручка API удаления питомца")
 	@Story("Юзер удаляет питомца")
+	@Description("""
+		Тест выполнен на публичной версии Swagger Petstore:
+		локальный docker-образ swaggerapi/petstore3:1.0.27 не соответствует спецификации
+		DELETE-запроса к несуществующему питомцу.
+		""")
 	void deletePetTestWithStatus404() {
 		Response response = client.deletePetExpected404(FAKE_ID);
 

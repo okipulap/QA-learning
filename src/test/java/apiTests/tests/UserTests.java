@@ -174,10 +174,18 @@ public class UserTests {
 
 	@Test
 	@Tag("Negative")
+	@Tag("Bug")
+	@Issue("5")
 	@DisplayName("Тест удаления юзера с несуществующим username")
 	@Severity(SeverityLevel.CRITICAL)
 	@Feature("Ручка API удаления юзера")
 	@Story("Юзер удаляет юзера")
+	@Description("""
+		Тест проверяет, что DELETE /user/{username} с несуществующим username
+		возвращает 404 Not Found, как задокументировано в OpenAPI-спецификации.
+		На локальном docker-образе swaggerapi/petstore3:1.0.27 эндпоинт
+		возвращает 200 OK вместо ожидаемого 404.
+		""")
 	void deleteUserExpected404() {
 		Response delResponse = client.deleteUserExpected404(FAKE_USERNAME);
 

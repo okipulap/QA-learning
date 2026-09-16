@@ -44,7 +44,7 @@ public class PetClient extends ApiBaseClient {
 			.when()
 			.post(PET_ENDPOINT + "/{petId}/uploadImage")
 			.then()
-			.log().all()
+			.log().ifError()
 			.statusCode(HttpStatus.SC_OK)
 			.extract()
 			.as(ApiResponse.class);
@@ -100,7 +100,7 @@ public class PetClient extends ApiBaseClient {
 	public Pet putPet(Pet request) {
 		return put(PET_ENDPOINT, request)
 			.then()
-			.log().all()
+			.log().ifError()
 			.statusCode(HttpStatus.SC_OK)
 			.body(matchesJsonSchemaInClasspath("schemas/pet-response-schema.json"))
 			.extract()
